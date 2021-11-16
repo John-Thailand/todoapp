@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/models/register_model.dart';
+import 'package:todo_app/login/login_model.dart';
+import 'package:todo_app/register/register_page.dart';
 import 'package:todo_app/pages/task_list_page.dart';
 
-class RegisterPage extends StatelessWidget {
-  const RegisterPage({Key? key}) : super(key: key);
+class LoginPage extends StatelessWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<RegisterModel>(
-      create: (_) => RegisterModel(),
+    return ChangeNotifierProvider<LoginModel>(
+      create: (_) => LoginModel(),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('新規登録'),
+          title: const Text('ログイン'),
         ),
         body: Center(
-          child: Consumer<RegisterModel>(builder: (context, model, child) {
+          child: Consumer<LoginModel>(builder: (context, model, child) {
             return Stack(
               children: [
                 Padding(
@@ -27,9 +28,6 @@ class RegisterPage extends StatelessWidget {
                         decoration: const InputDecoration(
                           hintText: 'Email',
                         ),
-                        onChanged: (text) {
-                          model.setEmail(text);
-                        },
                       ),
                       const SizedBox(height: 16.0),
                       TextField(
@@ -37,9 +35,6 @@ class RegisterPage extends StatelessWidget {
                         decoration: const InputDecoration(
                           hintText: 'パスワード',
                         ),
-                        onChanged: (text) {
-                          model.setPassword(text);
-                        },
                       ),
                       const SizedBox(height: 8.0),
                       ElevatedButton(
@@ -47,9 +42,13 @@ class RegisterPage extends StatelessWidget {
                           model.startLoading();
                           // 更新の処理
                           try {
-                            await model.signup();
+                            await model.login();
                             // タスクリストページに遷移
-                            Navigator.of(context).pop();
+                            Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => TaskListPage()),
+                                (_) => false);
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -61,7 +60,19 @@ class RegisterPage extends StatelessWidget {
                             model.endLoading();
                           }
                         },
-                        child: const Text('登録する'),
+                        child: const Text('ログイン'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // タスクリストページに遷移
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RegisterPage(),
+                            ),
+                          );
+                        },
+                        child: const Text('新規登録の方はこちら'),
                       ),
                     ],
                   ),

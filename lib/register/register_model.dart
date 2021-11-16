@@ -20,16 +20,6 @@ class RegisterModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setEmail(String email) {
-    this.email = email;
-    notifyListeners();
-  }
-
-  void setPassword(String password) {
-    this.password = password;
-    notifyListeners();
-  }
-
   Future signup() async {
     email = titleController.text;
     password = authorController.text;

@@ -7,12 +7,15 @@ class CustomBar extends StatelessWidget with PreferredSizeWidget {
   final IconData? icon;
   // アイコンをタップした際の処理
   final Function? function;
+  // タブ
+  final TabBar? tabBar;
 
   const CustomBar({
     Key? key,
     required this.title,
     this.icon,
     this.function,
+    this.tabBar,
   }) : super(key: key);
 
   @override
@@ -28,10 +31,11 @@ class CustomBar extends StatelessWidget with PreferredSizeWidget {
               )
             : Container(),
       ],
+      bottom: tabBar,
     );
   }
 
   // PreferredSizeWidgetを使用している場合、preferredSizeのgetterをオーバーライドする必要あり
   @override
-  Size get preferredSize => const Size.fromHeight(50.0);
+  Size get preferredSize => const Size.fromHeight(100.0);
 }

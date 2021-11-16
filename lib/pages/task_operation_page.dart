@@ -6,8 +6,9 @@ import 'package:todo_app/models/task.dart';
 import '../style.dart';
 
 class TaskOperationPage extends StatelessWidget {
-  TaskOperationPage({Key? key, this.task}) : super(key: key);
+  TaskOperationPage({Key? key, required this.uid, this.task}) : super(key: key);
 
+  final String uid;
   final Task? task;
 
   final CustomColor customColor = CustomColor();
@@ -20,6 +21,9 @@ class TaskOperationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // todoListコレクションの参照を代入
+    CollectionReference dbCollection =
+        db.collection('todos').doc(uid).collection('todoList');
     // タスク詳細ページの場合
     if (!isAddPage()) {
       // 既存のタスク名を代入
@@ -33,8 +37,7 @@ class TaskOperationPage extends StatelessWidget {
               icon: Icons.close,
               function: () async {
                 // タスクの削除
-                db
-                    .collection('todos')
+                dbCollection
                     .doc(task!.documentId)
                     .delete()
                     .then((value) => print("User Deleted"))
@@ -65,15 +68,14 @@ class TaskOperationPage extends StatelessWidget {
                 onPressed: () {
                   if (isAddPage()) {
                     // タスクの追加
-                    db.collection('todos').add({
+                    dbCollection.add({
                       'taskName': nameController.text,
                       'createdTime': Timestamp.now().toDate(),
                       'updatedTime': Timestamp.now().toDate(),
                     });
                   } else {
                     // タスクの更新
-                    db
-                        .collection('todos')
+                    dbCollection
                         .doc(task!.documentId)
                         .update({
                           'taskName': nameController.text,

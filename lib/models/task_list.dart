@@ -5,10 +5,15 @@ import 'package:todo_app/models/task.dart';
 class TaskList extends ChangeNotifier {
   List<Task>? taskList;
 
-  void fetchTaskList() async {
-    final QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('todos').get();
+  void fetchTaskList(String uid) async {
+    // ログインしたユーザーのタスクを取得
+    final QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('todos')
+        .doc(uid)
+        .collection('todoList')
+        .get();
 
+    // タスクのリストを作成
     final List<Task> taskList = snapshot.docs.map((DocumentSnapshot document) {
       Map<String, dynamic> data = document.data() as Map<String, dynamic>;
       final String documentId = document.id;
