@@ -1,6 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/pages/task_list_page.dart';
+import 'package:todo_app/pages/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -8,7 +8,7 @@ void main() async {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: TaskListPage(),
+      home: LoginPage(),
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
