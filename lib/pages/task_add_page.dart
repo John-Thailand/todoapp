@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/components/custom_bar.dart';
 
@@ -15,6 +16,7 @@ class _TaskAddPageState extends State<TaskAddPage> {
   final CustomColor customColor = CustomColor();
   final TextEditingController nameController = TextEditingController();
   final FirebaseFirestore db = FirebaseFirestore.instance;
+  final String userId = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +43,7 @@ class _TaskAddPageState extends State<TaskAddPage> {
                 onPressed: () {
                   // タスクの追加
                   db.collection('todos').add({
+                    'userId': userId,
                     'taskName': nameController.text,
                     'createdTime': Timestamp.now().toDate(),
                     'updatedTime': Timestamp.now().toDate(),
