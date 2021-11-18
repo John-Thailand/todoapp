@@ -14,26 +14,16 @@ class TaskListPage extends StatelessWidget {
   final CustomColor customColor = CustomColor();
   // ユーザーIDの取得
   final String userId = FirebaseAuth.instance.currentUser!.uid;
+  // 以前のタブのindex
+  // int beforeIndex = 1;
+  // 現在のタブのindex
+  // int currentIndex = 1;
 
   @override
   Widget build(BuildContext context) {
-    // 現在表示しているタブのindexを取得
-    int index = 0;
-
     return ChangeNotifierProvider<TaskList>(
-      create: (_) => TaskList()..fetchTaskList(userId),
+      create: (_) => TaskList()..fetchTaskList(userId: userId),
       child: Consumer<TaskList>(builder: (context, model, child) {
-        // 選択されたタブによって取得するデータを切り替える
-        // switch (index) {
-        //   case 0:
-        //     // 自身のタスクを取得
-        //     model.fetchTaskList(userId);
-        //     break;
-        //   case 1:
-        //     // 全員のタスクを取得
-        //     model.fetchTaskList(userId);
-        //     break;
-        // }
         final List<Task>? taskList = model.taskList;
         final List<Widget> widgets;
         final Widget widget;
@@ -51,7 +41,7 @@ class TaskListPage extends StatelessWidget {
                         ),
                       );
                       // 画面の状態を更新する
-                      model.fetchTaskList(userId);
+                      model.fetchTaskList(userId: userId);
                     },
                   ))
               .toList();
@@ -81,11 +71,21 @@ class TaskListPage extends StatelessWidget {
                   ),
                 );
                 // 画面の状態を更新する
-                model.fetchTaskList(userId);
+                model.fetchTaskList(userId: userId);
               },
               tabBar: TabBar(
-                onTap: (int currentIndex) {
-                  index = currentIndex;
+                onTap: (int index) {
+                  // 選択されたタブによって取得するデータを切り替える
+                  switch (index) {
+                    case 0:
+                      // 自身のタスクを取得
+                      model.fetchTaskList(userId: userId);
+                      break;
+                    case 1:
+                      // 全員のタスクを取得
+                      model.fetchTaskList();
+                      break;
+                  }
                 },
                 tabs: const <Widget>[
                   Tab(
@@ -100,38 +100,7 @@ class TaskListPage extends StatelessWidget {
             body: TabBarView(
               children: [
                 widget,
-                Consumer<TaskList>(builder: (context, model, child) {
-                  final List<Task>? taskList = model.taskList;
-
-                  if (taskList == null) {
-                    return const CircularProgressIndicator();
-                  }
-
-                  final List<Widget> widgets = taskList
-                      .map((task) => ListTile(
-                            title: Text(task.taskName!),
-                            onTap: () async {
-                              // タスク詳細ページに遷移
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TaskOperationPage(
-                                      userId: userId, task: task),
-                                ),
-                              );
-                              // 画面の状態を更新する
-                              model.fetchTaskList(userId);
-                            },
-                          ))
-                      .toList();
-
-                  return Container(
-                    color: customColor.bodyColor,
-                    child: ListView(
-                      children: widgets,
-                    ),
-                  );
-                }),
+                widget,
               ],
             ),
           ),
