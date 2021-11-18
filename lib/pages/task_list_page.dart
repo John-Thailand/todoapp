@@ -24,8 +24,8 @@ class TaskListPage extends StatelessWidget {
     return ChangeNotifierProvider<TaskList>(
       create: (_) => TaskList()..fetchTaskList(userId: userId),
       child: Consumer<TaskList>(builder: (context, model, child) {
-        final List<Task>? taskList = model.taskList;
-        final List<Widget> widgets;
+        List<Task>? taskList = model.taskList;
+        List<Widget>? widgets;
         final Widget widget;
         if (taskList != null) {
           widgets = taskList
