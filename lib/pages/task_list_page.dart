@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -31,6 +32,27 @@ class TaskListPage extends StatelessWidget {
           widgets = taskList
               .map((task) => ListTile(
                     title: Text(task.taskName!),
+                    leading: GestureDetector(
+                      onTap: () async {
+                        if (task.isFavorite) {
+                          // Firebaseのfavoriteコレクションからお気に入りのデータを削除
+                          await model.deleteFavoriteInfo(
+                              task.documentId, userId);
+                        } else {
+                          // Firebaseのfavoriteコレクションからお気に入りのデータを追加
+                          await model.addFavoriteInfo(task.documentId, userId);
+                        }
+                        // 選択されたタスクのお気に入り情報を更新
+                        model.switchFavFlag(task);
+                      },
+                      child: Icon(
+                        // TODO タスクがお気に入りされているかを判定する
+                        task.isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: task.isFavorite ? Colors.red : null,
+                      ),
+                    ),
                     onTap: () async {
                       // タスク詳細ページに遷移
                       await Navigator.push(
