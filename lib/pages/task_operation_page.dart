@@ -43,6 +43,40 @@ class TaskOperationPage extends StatelessWidget {
                     .then((value) => print("User Deleted"))
                     .catchError(
                         (error) => print("Failed to delete user: $error"));
+                // タスクに紐づいたいいねのデータを削除する
+                final QuerySnapshot querySnapshot = await FirebaseFirestore
+                    .instance
+                    .collection('favorites')
+                    .where('todoId', isEqualTo: task!.documentId)
+                    .get();
+                // サイズの取得
+                final int querySize = querySnapshot.size;
+                // ドキュメントを取得
+                final docs = querySnapshot.docs;
+
+                if (docs.isEmpty) {
+                  // 処理なし
+                } else {
+                  for (DocumentSnapshot doc in docs) {}
+                  // if (querySnapshot.size == 1) {}
+                }
+
+                for (Task task in localTastList!) {
+                  // favoritesコレクションにユーザーがお気に入りしたタスクがあるか抽出する
+                  querySnapshot = await FirebaseFirestore.instance
+                      .collection('favorites')
+                      .where('todoId', isEqualTo: task.documentId)
+                      .where('favoriteUserId', isEqualTo: userId)
+                      .get();
+                  // データが空でなければ
+                  if (querySnapshot.docs.isNotEmpty) {
+                    // お気に入りにする
+                    task.isFavorite = true;
+                  } else {
+                    // お気に入りにしない
+                    task.isFavorite = false;
+                  }
+                }
                 // タスク一覧へ戻る
                 Navigator.of(context).pop();
               },
