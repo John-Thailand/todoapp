@@ -14,10 +14,8 @@ class TaskListPage extends StatelessWidget {
   final CustomColor customColor = CustomColor();
   // ユーザーIDの取得
   final String userId = FirebaseAuth.instance.currentUser!.uid;
-  // 以前のタブのindex
-  // int beforeIndex = 1;
   // 現在のタブのindex
-  // int currentIndex = 1;
+  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -32,38 +30,60 @@ class TaskListPage extends StatelessWidget {
           widgets = taskList
               .map((task) => ListTile(
                     title: Text(task.taskName!),
-                    leading: GestureDetector(
-                      onTap: () async {
-                        if (task.isFavorite) {
-                          // Firebaseのfavoriteコレクションからお気に入りのデータを削除
-                          await model.deleteFavoriteInfo(
-                              task.documentId, userId);
-                        } else {
-                          // Firebaseのfavoriteコレクションからお気に入りのデータを追加
-                          await model.addFavoriteInfo(task.documentId, userId);
-                        }
-                        // 選択されたタスクのお気に入り情報を更新
-                        model.switchFavFlag(task);
-                      },
-                      child: Icon(
-                        // TODO タスクがお気に入りされているかを判定する
-                        task.isFavorite
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: task.isFavorite ? Colors.red : null,
+                    leading: SizedBox(
+                      width: 80,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              task.isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: task.isFavorite ? Colors.red : null,
+                            ),
+                            onPressed: () async {
+                              if (task.isFavorite) {
+                                // Firebaseのfavoriteコレクションからお気に入りのデータを削除
+                                await model.deleteFavoriteInfo(
+                                    task.documentId, userId);
+                                // お気に入り数のカウントダウン
+                                model.minusFav(task);
+                              } else {
+                                // Firebaseのfavoriteコレクションからお気に入りのデータを追加
+                                await model.addFavoriteInfo(
+                                    task.documentId, userId);
+                                // お気に入り数のカウントアップ
+                                model.plusFav(task);
+                              }
+                              // 選択されたタスクのお気に入り情報を更新
+                              model.switchFavFlag(task);
+                            },
+                          ),
+                          task.favoriteCount == 0
+                              ? Container()
+                              : Text(task.favoriteCount.toString()),
+                        ],
                       ),
                     ),
                     onTap: () async {
-                      // タスク詳細ページに遷移
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              TaskOperationPage(userId: userId, task: task),
-                        ),
-                      );
-                      // 画面の状態を更新する
-                      model.fetchTaskList(userId: userId, isAllTask: false);
+                      // 自分のタスクタブの場合、詳細ページに遷移する
+                      switch (currentIndex) {
+                        case 0:
+                          // タスク詳細ページに遷移
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  TaskOperationPage(userId: userId, task: task),
+                            ),
+                          );
+                          // 画面の状態を更新する
+                          model.fetchTaskList(userId: userId, isAllTask: false);
+                          break;
+                        case 1:
+                          // 全てタスクの場合、詳細ページに遷移できないようにする
+                          break;
+                      }
                     },
                   ))
               .toList();
@@ -108,6 +128,7 @@ class TaskListPage extends StatelessWidget {
                       model.fetchTaskList(userId: userId, isAllTask: true);
                       break;
                   }
+                  currentIndex = index;
                 },
                 tabs: const <Widget>[
                   Tab(

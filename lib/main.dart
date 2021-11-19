@@ -15,8 +15,7 @@ void main() async {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: // isUserNull ? const LoginPage() : TaskListPage(),
-          const LoginPage(),
+      home: isUserNull ? const LoginPage() : TaskListPage(),
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

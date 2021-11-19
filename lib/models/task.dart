@@ -5,6 +5,7 @@ class Task {
     required this.createdTime,
     required this.updatedTime,
     required this.isFavorite,
+    required this.favoriteCount,
   });
 
   String documentId;
@@ -12,4 +13,5 @@ class Task {
   DateTime? createdTime;
   DateTime? updatedTime;
   bool isFavorite;
+  int favoriteCount;
 }

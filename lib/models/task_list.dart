@@ -41,11 +41,14 @@ class TaskList extends ChangeNotifier {
         createdTime: createdTime,
         updatedTime: updatedTime,
         isFavorite: false,
+        favoriteCount: 0,
       );
     }).toList();
 
     // 自身がお気に入りしたタスクを取得
     QuerySnapshot querySnapshot;
+    // タスクのお気に入り数を取得するための変数
+    QuerySnapshot countSnapshot;
     // それぞれのタスクを処理
     for (Task task in localTaskList!) {
       // favoritesコレクションにユーザーがお気に入りしたタスクがあるか抽出する
@@ -62,6 +65,13 @@ class TaskList extends ChangeNotifier {
         // お気に入りにしない
         task.isFavorite = false;
       }
+      // タスクに紐づいたお気に入り情報を抽出
+      countSnapshot = await FirebaseFirestore.instance
+          .collection('favorites')
+          .where('todoId', isEqualTo: task.documentId)
+          .get();
+      // タスクのお気に入り数を取得
+      task.favoriteCount = countSnapshot.size;
     }
 
     taskList = localTaskList;
@@ -76,6 +86,18 @@ class TaskList extends ChangeNotifier {
       'favoriteUserId': favoriteUserId,
       'createdTime': Timestamp.now().toDate(),
     });
+  }
+
+  // タスクのお気に入り数をカウントアップ
+  void plusFav(Task task) {
+    task.favoriteCount++;
+    notifyListeners();
+  }
+
+  // タスクのお気に入り数をカウントダウン
+  void minusFav(Task task) {
+    task.favoriteCount--;
+    notifyListeners();
   }
 
   // タスクのお気に入り情報を削除
