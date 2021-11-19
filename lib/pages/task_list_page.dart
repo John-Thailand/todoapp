@@ -22,7 +22,8 @@ class TaskListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<TaskList>(
-      create: (_) => TaskList()..fetchTaskList(userId: userId),
+      create: (_) =>
+          TaskList()..fetchTaskList(userId: userId, isAllTask: false),
       child: Consumer<TaskList>(builder: (context, model, child) {
         List<Task>? taskList = model.taskList;
         List<Widget>? widgets;
@@ -62,7 +63,7 @@ class TaskListPage extends StatelessWidget {
                         ),
                       );
                       // 画面の状態を更新する
-                      model.fetchTaskList(userId: userId);
+                      model.fetchTaskList(userId: userId, isAllTask: false);
                     },
                   ))
               .toList();
@@ -92,7 +93,7 @@ class TaskListPage extends StatelessWidget {
                   ),
                 );
                 // 画面の状態を更新する
-                model.fetchTaskList(userId: userId);
+                model.fetchTaskList(userId: userId, isAllTask: false);
               },
               tabBar: TabBar(
                 onTap: (int index) {
@@ -100,11 +101,11 @@ class TaskListPage extends StatelessWidget {
                   switch (index) {
                     case 0:
                       // 自身のタスクを取得
-                      model.fetchTaskList(userId: userId);
+                      model.fetchTaskList(userId: userId, isAllTask: false);
                       break;
                     case 1:
                       // 全員のタスクを取得
-                      model.fetchTaskList();
+                      model.fetchTaskList(userId: userId, isAllTask: true);
                       break;
                   }
                 },

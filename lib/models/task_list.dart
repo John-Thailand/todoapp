@@ -6,11 +6,11 @@ class TaskList extends ChangeNotifier {
   List<Task>? taskList;
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  void fetchTaskList({String? userId}) async {
+  void fetchTaskList({required String userId, required bool isAllTask}) async {
     final QuerySnapshot snapshot;
 
     // todosコレクションのデータを取得
-    if (userId == null) {
+    if (isAllTask == true) {
       // 全てのタスクのみ取得
       snapshot = await FirebaseFirestore.instance
           .collection('todos')
