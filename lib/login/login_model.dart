@@ -19,6 +19,7 @@ class LoginModel extends ChangeNotifier {
     notifyListeners();
   }
 
+
   Future login() async {
     email = titleController.text;
     password = authorController.text;

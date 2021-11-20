@@ -2,6 +2,8 @@ class Task {
   Task({
     required this.documentId,
     required this.taskName,
+    required this.taskDetail,
+    required this.genre,
     required this.createdTime,
     required this.updatedTime,
     required this.isFavorite,
@@ -10,6 +12,8 @@ class Task {
 
   String documentId;
   String? taskName;
+  String? taskDetail;
+  String? genre;
   DateTime? createdTime;
   DateTime? updatedTime;
   bool isFavorite;

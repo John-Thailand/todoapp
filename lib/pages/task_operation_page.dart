@@ -14,6 +14,7 @@ class TaskOperationPage extends StatelessWidget {
 
   final CustomColor customColor = CustomColor();
   final TextEditingController nameController = TextEditingController();
+  final TextEditingController detailController = TextEditingController();
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
   bool isAddPage() {
@@ -80,11 +81,32 @@ class TaskOperationPage extends StatelessWidget {
                 controller: nameController,
                 enabled: true,
                 maxLength: 20,
-                decoration: const InputDecoration(
-                  labelText: 'タスク名',
-                  counterText: '',
+                decoration: InputDecoration(
+                    labelText: 'タスク名',
+                    counterText: '',
+                    filled: true,
+                    fillColor: customColor.greyColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    )),
+              ),
+              const SizedBox(height: 24),
+              TextField(
+                controller: detailController,
+                keyboardType: TextInputType.multiline,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: 'タスクの詳細',
+                  filled: true,
+                  fillColor: customColor.greyColor,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                  )
                 ),
               ),
+              const SizedBox(height: 16),
               const SizedBox(height: 240),
               ElevatedButton(
                 onPressed: () {
@@ -93,6 +115,7 @@ class TaskOperationPage extends StatelessWidget {
                     dbCollection.add({
                       'userId': userId,
                       'taskName': nameController.text,
+                      'taskDetail': detailController.text,
                       'createdTime': Timestamp.now().toDate(),
                       'updatedTime': Timestamp.now().toDate(),
                     });

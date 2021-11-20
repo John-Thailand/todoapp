@@ -3,7 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:todo_app/models/task.dart';
 
 class TaskList extends ChangeNotifier {
-  List<Task>? taskList;
+  List<Task>? myTaskList;
+  List<Task>? allTaskList;
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
   void fetchTaskList({required String userId, required bool isAllTask}) async {
@@ -33,11 +34,25 @@ class TaskList extends ChangeNotifier {
       final String taskName = data['taskName'];
       final DateTime createdTime = data['createdTime'].toDate();
       final DateTime updatedTime = data['updatedTime'].toDate();
+      String? taskDetail;
+      String? genre;
+
+      print(data['taskDetail']);
+      print(data['genre']);
+      if (data['taskDetail'] != null) {
+        taskDetail = data['taskDetail'];
+      }
+
+      if (data['genre'] != null) {
+        genre = data['genre'];
+      }
 
       // Task型としてデータを格納
       return Task(
         documentId: documentId,
         taskName: taskName,
+        taskDetail: taskDetail,
+        genre: genre,
         createdTime: createdTime,
         updatedTime: updatedTime,
         isFavorite: false,
@@ -74,7 +89,14 @@ class TaskList extends ChangeNotifier {
       task.favoriteCount = countSnapshot.size;
     }
 
-    taskList = localTaskList;
+    if (isAllTask == true) {
+      // 全てのタスクのみ取得
+      allTaskList = localTaskList;
+    } else {
+      // 自身のタスクのみ取得
+      myTaskList = localTaskList;
+    }
+
     notifyListeners();
   }
 
