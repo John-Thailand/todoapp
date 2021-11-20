@@ -124,7 +124,7 @@ class TaskList extends ChangeNotifier {
 
   // タスクのお気に入り情報を削除
   Future deleteFavoriteInfo(String todoId, String favoriteUserId) async {
-    // タスクの追加
+    // タスクのお気に入り情報を取得
     final querySnapshot = await db
         .collection('favorites')
         .where('todoId', isEqualTo: todoId)
