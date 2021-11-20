@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/components/custom_bar.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/models/task_list.dart';
-import 'package:todo_app/pages/task_operation_page.dart';
+import 'package:todo_app/task_operation/task_operation_page.dart';
 
 import '../style.dart';
 
