@@ -4,12 +4,12 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/components/custom_bar.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/models/task_list.dart';
+import 'package:todo_app/style.dart';
 import 'package:todo_app/task_operation/task_operation_page.dart';
 
-import '../style.dart';
-
 class TaskListPage extends StatelessWidget {
-  TaskListPage({Key? key}) : super(key: key);
+  TaskListPage({ Key? key }) : super(key: key);
+  
   // 固定値となる変数は、build外で設定する
   final CustomColor customColor = CustomColor();
   // ユーザーIDの取得
@@ -24,6 +24,7 @@ class TaskListPage extends StatelessWidget {
   List<Widget>? allListTiles;
   // 「全て」タブのページ
   Widget? allPage;
+
 
   ListTile makeListTile(Task task, TaskList model, BuildContext context) {
     return ListTile(

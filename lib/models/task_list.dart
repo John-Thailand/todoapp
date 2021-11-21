@@ -145,4 +145,9 @@ class TaskList extends ChangeNotifier {
     // 情報を更新する
     notifyListeners();
   }
+
+  void listener() {
+    // 情報を更新する
+    notifyListeners();
+  }
 }

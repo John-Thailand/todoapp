@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/login/login_model.dart';
 import 'package:todo_app/register/register_page.dart';
-import 'package:todo_app/pages/task_list_page.dart';
+import 'package:todo_app/home_screen.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -47,7 +47,7 @@ class LoginPage extends StatelessWidget {
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => TaskListPage()),
+                                    builder: (context) => HomeScreen()),
                                 (_) => false);
                           } catch (e) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -68,7 +68,7 @@ class LoginPage extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => RegisterPage(),
+                              builder: (context) => const RegisterPage(),
                             ),
                           );
                         },
