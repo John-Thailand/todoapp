@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/pages/profile_page.dart';
+import 'package:todo_app/mypage/my_page.dart';
 import 'package:todo_app/pages/task_list_page.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _pages = [
     TaskListPage(),
-    const ProfilePage(),
+    MyPage(),
   ];
 
   @override
