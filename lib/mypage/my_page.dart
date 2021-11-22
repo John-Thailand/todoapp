@@ -16,29 +16,6 @@ class MyPage extends StatelessWidget {
     return ChangeNotifierProvider<MyModel>(
       create: (_) => MyModel()..fetchUser(),
       child: Scaffold(
-        // appBar: AppBar(
-        //   title: Text('マイページ'),
-        //   actions: [
-        //     Consumer<MyModel>(builder: (context, model, child) {
-        //         return IconButton(
-        //           onPressed: () async {
-        //             // プロフィール編集ページに遷移
-        //             await Navigator.push(
-        //               context,
-        //               MaterialPageRoute(
-        //                 builder: (context) =>
-        //                 EditProfilePage(userName: model.userName),
-        //               ),
-        //             );
-        //             // ユーザー情報が変更されている可能性があるため、ユーザー情報を取得
-        //             model.fetchUser();
-        //           },
-        //           icon: const Icon(Icons.edit),
-        //         );
-        //       }
-        //     ),
-        //   ],
-        // ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Center(
