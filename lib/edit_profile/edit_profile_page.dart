@@ -6,7 +6,6 @@ import 'edit_profile_model.dart';
 class EditProfilePage extends StatelessWidget {
   EditProfilePage({Key? key, required this.userName}) : super(key: key);
   final String? userName;
-  // 固定値となる変数は、build外で設定する
   final CustomColor customColor = CustomColor();
 
   @override
