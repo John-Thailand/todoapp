@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:todo_app/components/dialog.dart';
 
 class ResetMailModel extends ChangeNotifier {
   ResetMailModel(this.nowEmail);
@@ -15,7 +16,7 @@ class ResetMailModel extends ChangeNotifier {
   final emailController = TextEditingController();
 
   // ユーザーがEmailをリセットしたいか
-  bool result = false;
+  bool wantToResetEmail = false;
 
   // パスワード
   String? password;
@@ -57,66 +58,79 @@ class ResetMailModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ユーザーにメールアドレス更新をするか確認をとる
-  Future resetEmailDialog(BuildContext context) async {
-    result = (await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('確認'),
-          content: const Text('パスワードを変更しますか？'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('NO'),
-              onPressed: () => Navigator.of(context).pop(false),
-            ),
-            TextButton(
-              child: const Text('YES'),
-              onPressed: () => Navigator.of(context).pop(true),
-            ),
-          ],
-        );
-      },
-    ))!;
-  }
-
   // メールアドレス更新処理
-  Future resetEmail() async {
+  Future<bool> resetEmail(BuildContext context) async {
     // ユーザー情報
-    final User? _user = _auth.currentUser;
+    final User _user = _auth.currentUser!;
     // Credentialを作成
     AuthCredential credential = EmailAuthProvider.credential(email: newEmail!, password: password!);
 
-    // ユーザー情報が空ではない場合
-    if(_user != null) {
-      // ユーザーの再認証を行う
-      _user.reauthenticateWithCredential(credential).then((userCredential) => {
-        // User re-authenticated.
-        // メールアドレスをアップデートする
-        userCredential.user!.updateEmail(newEmail!).then((value) => {
-          // Email updated!
-          userCredential.user!.sendEmailVerification().then(() => {
-            // Email verification sent!
-          })
-        }).catchError((error) => {
-          // An error occured
-        })
-      }).catchError((error) => {
-        // An error ocurred
-      });
+    // 1. ユーザーの再認証を行う
+    try {
+      _user.reauthenticateWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-mismatch') {
+        okDialog(context, 'エラー', '問題が発生しました。一度サインアウトしてやり直してください。');
+        return false;
+      } else if (e.code == 'user-not-found') {
+        okDialog(context, 'エラー', 'アカウントが見つかりません。一度サインアウトしてやり直してください。');
+        return false;
+      } else if (e.code == 'invalid-credential') {
+        okDialog(context, 'エラー', '問題が発生しました。一度サインアウトしてやり直してください。');
+        return false;
+      } else if (e.code == 'invalid-email') {
+        okDialog(context, 'エラー', 'メールアドレスが正しくありません。一度サインアウトしてやり直してください。');
+        return false;
+      } else if (e.code == 'user-disabled') {
+        okDialog(context, 'エラー', 'そのアカウントはご使用になれません。');
+        return false;
+      } else if (e.code == 'wrong-password') {
+        okDialog(context, 'エラー', 'パスワードが正しくありません。');
+        return false;
+      } else if (e.code == 'too-many-requests') {
+        okDialog(context, 'エラー', 
+          '認証失敗の回数が一定を超えました。'
+          'しばらくして再度サインインしてください。'
+        );
+        return false;
+      } else {
+        okDialog(context, 'エラー', '問題が発生しました。一度サインアウトしてやり直してください。');
+        return false;
+      }
     }
+
+    // 2. メールアドレスをアップデートする
+    try {
+      _user.updateEmail(newEmail!);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'invalid-email') {
+        okDialog(context, 'エラー', 'メールアドレスが正しくありません。一度サインアウトしてやり直してください。');
+        return false;
+      } else if (e.code == 'email-already-in-use') {
+        okDialog(context, 'エラー', '既にそのメールアドレスは使用されています。');
+        return false;
+      } else if (e.code == 'requires-recent-login') {
+        okDialog(context, 'エラー', 'ログインしてから時間が経過しております。再度ログインしてください。');
+        return false;
+      } else {
+        okDialog(context, 'エラー', '問題が発生しました。一度サインアウトしてやり直してください。');
+        return false;
+      }
+    }
+
+    // 3. メールアドレス確認用のメールを送信
+    _user.sendEmailVerification();
+    okDialog(context, '完了', '新しいメールアドレス宛にメールを送信しました。そちらからメールアドレスの認証を行ってください。');
+
+    // 成功した場合はtrueを返す
+    return true;
   }
 
-  // // FirebaseFirestoraを更新
-  // Future updateUserInfo() async {
-  //   // ユーザー名をセット
-  //   userName = userNameController.text;
-  //   // firestoreに追加
-  //   FirebaseFirestore.instance.collection('users').doc(userId).update({
-  //     'userImageURL': userImageURL,
-  //     'userName': userName,
-  //     'updatedTime': Timestamp.now(),
-  //   });
-  // }
+  // メールアドレスを更新
+  Future updateEmailInFirestore() async {
+    FirebaseFirestore.instance.collection('users').doc(userId).update({
+      'email': newEmail,
+      'updatedTime': Timestamp.now(),
+    });
+  }
 }

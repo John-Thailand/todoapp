@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/components/dialog.dart';
 import 'package:todo_app/reset_mail/reset_mail_model.dart';
 import 'package:todo_app/style.dart';
 
@@ -32,6 +33,7 @@ class ResetMailPage extends StatelessWidget {
                       const SizedBox(height: 32.0),
                       TextField(
                         controller: model.passwordController,
+                        obscureText: true,
                         decoration: const InputDecoration(
                           hintText: 'パスワード',
                         ),
@@ -56,15 +58,20 @@ class ResetMailPage extends StatelessWidget {
                                 // メールアドレス更新の処理
                                 try {
                                   // ユーザーにメールアドレスを更新して良いか確認を取る
-                                  await model.resetEmailDialog(context);
+                                  model.wantToResetEmail = await dialog(context, '確認', 'パスワードを変更しますか？');
                                   // リセットしたい場合
-                                  if (model.result) {
+                                  if (model.wantToResetEmail) {
                                     // ローディング開始
                                     model.startLoading();
                                     // メールアドレス更新処理
-                                    await model.resetEmail();
-                                    // マイページに戻る
-                                    Navigator.of(context).pop();
+                                    final result = await model.resetEmail(context);
+                                    // 成功した場合
+                                    if (result) {
+                                      // Firestoreに新しいメールアドレスを設定する
+                                      await model.updateEmailInFirestore();
+                                      // マイページに戻る
+                                      Navigator.of(context).pop();
+                                    }
                                   }
                                 } catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(
