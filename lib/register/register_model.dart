@@ -31,13 +31,15 @@ class RegisterModel extends ChangeNotifier {
       final user = userCredential.user;
 
       if (user != null) {
-        final uid = user.uid;
+        final userId = user.uid;
 
         // firestoreに追加
-        final doc = FirebaseFirestore.instance.collection('users').doc(uid);
+        final doc = FirebaseFirestore.instance.collection('users').doc(userId);
         await doc.set({
-          'uid': uid,
+          'userId': userId,
           'email': email,
+          'createdTime': Timestamp.now(),
+          'updatedTime': Timestamp.now(),
         });
       }
     }

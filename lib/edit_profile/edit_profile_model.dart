@@ -7,13 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class EditProfileModel extends ChangeNotifier {
-  EditProfileModel({required this.userName}) {
-    // nullでない場合
+  EditProfileModel({required this.userName, required this.userImageURL}) {
+    // ユーザー名
     if(userName != null) {
       // 既に設定されたユーザー名を格納
       userNameController.text = userName!;
     }
   }
+
+  // ローディング中であるか
+  bool isLoading = false;
 
   // プロフィール画像を格納する
   File? image;
@@ -29,6 +32,16 @@ class EditProfileModel extends ChangeNotifier {
 
   // ユーザーIDの取得
   final String userId = FirebaseAuth.instance.currentUser!.uid;
+
+  void startLoading() {
+    isLoading = true;
+    notifyListeners();
+  }
+
+  void endLoading() {
+    isLoading = false;
+    notifyListeners();
+  }
 
   // プロフィール画像の取得
   Future<void> getImageFromGallery() async {
@@ -78,17 +91,18 @@ class EditProfileModel extends ChangeNotifier {
   }
 
   bool isUpdated() {
-    return userName != null;
+    return userName != null || image != null;
   }
 
   // FirebaseFirestoraを更新
-  Future updateFirestore() async {
+  Future updateUserInfo() async {
     // ユーザー名をセット
     userName = userNameController.text;
     // firestoreに追加
     FirebaseFirestore.instance.collection('users').doc(userId).update({
       'userImageURL': userImageURL,
       'userName': userName,
+      'updatedTime': Timestamp.now(),
     });
   }
 }

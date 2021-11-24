@@ -3,8 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MyModel extends ChangeNotifier {
+  // ローディング中であるか
   bool isLoading = false;
+  // 画像のURL
+  String userImageURL = '';
+  // ユーザー名
   String? userName;
+  // Eメール
   String? email;
 
   void startLoading() {
@@ -19,12 +24,21 @@ class MyModel extends ChangeNotifier {
 
   // ユーザー情報の取得
   void fetchUser() async {
+    // ローディングを開始
+    startLoading();
+
     final String userId = FirebaseAuth.instance.currentUser!.uid;
     final snapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
     final data = snapshot.data();
 
-    // 値がnullでない場合
-    if(data?['userName'] != null) {
+    // 画像のURL
+    if(data?['userImageURL'] != null && data?['userImageURL'] != '') {
+      // userImageURLを格納する
+      userImageURL = data!['userImageURL'];
+    }
+
+    // ユーザー名
+    if(data?['userName'] != null && data?['userName'] != '') {
       // userNameを格納する
       userName = data!['userName'];
     } else {
@@ -32,7 +46,7 @@ class MyModel extends ChangeNotifier {
       userName = null;
     }
 
-    // 値がnullでない場合
+    // Eメール
     if(data?['email'] != null) {
       // emailを格納する
       email = data!['email'];
@@ -41,9 +55,11 @@ class MyModel extends ChangeNotifier {
       email = null;
     }
 
-    notifyListeners();
+    // ローディングを終了
+    endLoading();
   }
 
+  // ログアウト
   Future logout() async {
     await FirebaseAuth.instance.signOut();
   }
