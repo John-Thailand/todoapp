@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MyModel extends ChangeNotifier {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   // ローディング中であるか
   bool isLoading = false;
   // 画像のURL
@@ -12,11 +14,12 @@ class MyModel extends ChangeNotifier {
   // Eメール
   String? email;
 
+  // ローディングを開始
   void startLoading() {
     isLoading = true;
     notifyListeners();
   }
-
+  // ローディングを終了
   void endLoading() {
     isLoading = false;
     notifyListeners();
@@ -62,5 +65,57 @@ class MyModel extends ChangeNotifier {
   // ログアウト
   Future logout() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  // パスワード再設定
+  Future sendPasswordResetEmail(BuildContext context) async {
+    try {
+      // パスワードを再設定するか確認するダイアログ
+      bool? isResetedPassword = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('確認'),
+            content: const Text('パスワードを変更しますか？'),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('NO'),
+                onPressed: () => Navigator.of(context).pop(false),
+              ),
+              TextButton(
+                child: const Text('YES'),
+                onPressed: () => Navigator.of(context).pop(true),
+              ),
+            ],
+          );
+        },
+      );
+      // パスワードを再設定する場合
+      if(isResetedPassword == true) {
+        // パスワードを再設定
+        await _auth.sendPasswordResetEmail(email: email!);
+        // メールを確認する旨をダイアログで表示する
+        await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('完了'),
+              content: const Text('パスワード変更するためのメールを送信しました。'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            );
+          },
+        );
+        print('sendPasswordResetEmail: success');
+      }
+    } catch (error) {
+      print('sendPasswordResetEmail: ${error.toString()}');
+    }
   }
 }

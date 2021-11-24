@@ -175,8 +175,8 @@ class MyPage extends StatelessWidget {
                               ),
                               padding: const EdgeInsets.all(16.0),
                             ),
-                            onPressed: () {
-                              // TODO パスワード変更処理
+                            onPressed: () async {
+                              await model.sendPasswordResetEmail(context);
                             },
                           ),
                         ),
