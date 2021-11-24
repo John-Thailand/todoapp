@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/edit_profile/edit_profile_page.dart';
 import 'package:todo_app/login/login_page.dart';
+import 'package:todo_app/reset_mail/reset_mail_page.dart';
 import 'package:todo_app/style.dart';
 
 import 'my_model.dart';
@@ -151,8 +152,15 @@ class MyPage extends StatelessWidget {
                               ),
                               padding: const EdgeInsets.all(16.0),
                             ),
-                            onPressed: () {
-                              // TODO メルアド変更処理
+                            onPressed: () async {
+                              // メールアドレス変更ページに遷移
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                  ResetMailPage(nowEmail: model.email!),
+                                ),
+                              );
                             },
                           ),
                         ),
