@@ -9,6 +9,8 @@ class CustomBar extends StatelessWidget with PreferredSizeWidget {
   final Function? function;
   // タブ
   final TabBar? tabBar;
+  // アップバーの高さ
+  final double? appBarHeight;
 
   const CustomBar({
     Key? key,
@@ -16,6 +18,7 @@ class CustomBar extends StatelessWidget with PreferredSizeWidget {
     this.icon,
     this.function,
     this.tabBar,
+    this.appBarHeight,
   }) : super(key: key);
 
   @override
@@ -37,5 +40,5 @@ class CustomBar extends StatelessWidget with PreferredSizeWidget {
 
   // PreferredSizeWidgetを使用している場合、preferredSizeのgetterをオーバーライドする必要あり
   @override
-  Size get preferredSize => const Size.fromHeight(100.0);
+  Size get preferredSize => Size.fromHeight(appBarHeight ?? 56.0);
 }

@@ -53,13 +53,20 @@ class TaskOperationPage extends StatelessWidget {
                 title: 'タスク詳細',
                 icon: Icons.close,
                 function: () async {
+                  // バッチインスタンスの生成
+                  WriteBatch batch = db.batch();
+                  // ドキュメントの取得
+                  DocumentReference<Map<String, dynamic>>
+                   todoRef = db.collection('todos').doc(task!.documentId);
+                  // todoを削除
+                  batch.delete(todoRef);
                   // タスクの削除
-                  dbCollection
-                      .doc(task!.documentId)
-                      .delete()
-                      .then((value) => print("User Deleted"))
-                      .catchError(
-                          (error) => print("Failed to delete user: $error"));
+                  // dbCollection
+                  //     .doc(task!.documentId)
+                  //     .delete()
+                  //     .then((value) => print("User Deleted"))
+                  //     .catchError(
+                  //         (error) => print("Failed to delete user: $error"));
                   // タスクに紐づいたいいねのデータを削除する
                   final QuerySnapshot querySnapshot = await dbFavCollection
                       .where('todoId', isEqualTo: task!.documentId)
@@ -71,15 +78,22 @@ class TaskOperationPage extends StatelessWidget {
                     // 処理なし
                   } else {
                     for (DocumentSnapshot doc in docs) {
+                      // ドキュメントの取得
+                      DocumentReference<Map<String, dynamic>>
+                        favRef = db.collection('favorites').doc(doc.id);
+                      // お気に入り情報を削除
+                      batch.delete(favRef);
                       // タスクの削除
-                      dbFavCollection
-                          .doc(doc.id)
-                          .delete()
-                          .then((value) => print("Favorite Task Deleted"))
-                          .catchError((error) =>
-                              print("Failed to delete favorite task: $error"));
+                      // dbFavCollection
+                      //     .doc(doc.id)
+                      //     .delete()
+                      //     .then((value) => print("Favorite Task Deleted"))
+                      //     .catchError((error) =>
+                      //         print("Failed to delete favorite task: $error"));
                     }
                   }
+                  // バッチ書き込み処理
+                  await batch.commit();
                   // タスク一覧へ戻る
                   Navigator.of(context).pop();
                 },
@@ -150,10 +164,10 @@ class TaskOperationPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 240),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (isAddPage()) {
                       // タスクの追加
-                      dbCollection.add({
+                      await dbCollection.add({
                         'userId': userId,
                         'taskName': nameController.text,
                         'taskDetail': detailController.text,
@@ -163,7 +177,7 @@ class TaskOperationPage extends StatelessWidget {
                       });
                     } else {
                       // タスクの更新
-                      dbCollection
+                      await dbCollection
                           .doc(task!.documentId)
                           .update({
                             'taskName': nameController.text,

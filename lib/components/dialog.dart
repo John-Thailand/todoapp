@@ -5,18 +5,18 @@ Future<bool> dialog(BuildContext context, String title, String content) async {
   return (await showDialog<bool>(
     context: context,
     barrierDismissible: false,
-    builder: (BuildContext context) {
+    builder: (BuildContext dialogContext) {
       return AlertDialog(
         title: Text(title),
         content: Text(content),
         actions: <Widget>[
           TextButton(
             child: const Text('NO'),
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
           ),
           TextButton(
             child: const Text('YES'),
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
           ),
         ],
       );

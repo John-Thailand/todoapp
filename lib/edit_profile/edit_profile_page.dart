@@ -73,6 +73,7 @@ class EditProfilePage extends StatelessWidget {
                         onChanged: (text) {
                           model.setUserName(text);
                         },
+                        maxLength: 16,
                       ),
                       const SizedBox(height: 32.0),
                       ElevatedButton(

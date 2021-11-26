@@ -162,6 +162,7 @@ class TaskListPage extends StatelessWidget {
                   ),
                 ],
               ),
+              appBarHeight: 100.0,
             ),
             body: TabBarView(
               children: [
