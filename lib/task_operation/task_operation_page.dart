@@ -98,103 +98,105 @@ class TaskOperationPage extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
               ),
-        body: Container(
-          color: customColor.bodyColor,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                const SizedBox(height: 80),
-                TextField(
-                  controller: nameController,
-                  enabled: true,
-                  maxLength: 20,
-                  decoration: InputDecoration(
-                      labelText: 'タスク名',
-                      counterText: '',
+        body: SingleChildScrollView(
+          child: Container(
+            color: customColor.bodyColor,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 80),
+                  TextField(
+                    controller: nameController,
+                    enabled: true,
+                    maxLength: 20,
+                    decoration: InputDecoration(
+                        labelText: 'タスク名',
+                        counterText: '',
+                        filled: true,
+                        fillColor: customColor.greyColor,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        )),
+                  ),
+                  const SizedBox(height: 32),
+                  TextField(
+                    controller: detailController,
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 5,
+                    decoration: InputDecoration(
+                      labelText: 'タスクの詳細',
                       filled: true,
                       fillColor: customColor.greyColor,
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      )),
-                ),
-                const SizedBox(height: 32),
-                TextField(
-                  controller: detailController,
-                  keyboardType: TextInputType.multiline,
-                  maxLines: 5,
-                  decoration: InputDecoration(
-                    labelText: 'タスクの詳細',
-                    filled: true,
-                    fillColor: customColor.greyColor,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                    )
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                      )
+                    ),
                   ),
-                ),
-                const SizedBox(height: 32),
-                Consumer<TaskOperationModel>(builder: (context, model, child) {
-                    return DropdownButton<String>(
-                      value: dropdownValue,
-                      icon: const Icon(Icons.arrow_downward),
-                      iconSize: 24,
-                      elevation: 16,
-                      style: const TextStyle(color: Colors.deepPurple),
-                      underline: Container(
-                        height: 2,
-                        color: Colors.deepPurpleAccent,
-                      ),
-                      onChanged: (String? newValue) {
-                        // 新しい値を代入
-                        dropdownValue = newValue!;
-                        // notifyListeners()を呼び出す
-                        model.listeners();
-                      },
-                      items: <String>['未設定', '仕事', '家事']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    );
-                  }
-                ),
-                const SizedBox(height: 240),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (isAddPage()) {
-                      // タスクの追加
-                      await dbCollection.add({
-                        'userId': userId,
-                        'taskName': nameController.text,
-                        'taskDetail': detailController.text,
-                        'genre': dropdownValue,
-                        'createdTime': Timestamp.now().toDate(),
-                        'updatedTime': Timestamp.now().toDate(),
-                      });
-                    } else {
-                      // タスクの更新
-                      await dbCollection
-                          .doc(task!.documentId)
-                          .update({
-                            'taskName': nameController.text,
-                            'taskDetail': detailController.text,
-                            'genre': dropdownValue,
-                            'updatedTime': Timestamp.now(),
-                          })
-                          .then((value) => print("User Updated"))
-                          .catchError(
-                              (error) => print("Failed to update user: $error"));
+                  const SizedBox(height: 32),
+                  Consumer<TaskOperationModel>(builder: (context, model, child) {
+                      return DropdownButton<String>(
+                        value: dropdownValue,
+                        icon: const Icon(Icons.arrow_downward),
+                        iconSize: 24,
+                        elevation: 16,
+                        style: const TextStyle(color: Colors.deepPurple),
+                        underline: Container(
+                          height: 2,
+                          color: Colors.deepPurpleAccent,
+                        ),
+                        onChanged: (String? newValue) {
+                          // 新しい値を代入
+                          dropdownValue = newValue!;
+                          // notifyListeners()を呼び出す
+                          model.listeners();
+                        },
+                        items: <String>['未設定', '仕事', '家事']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      );
                     }
-                    // タスク一覧へ戻る
-                    Navigator.of(context).pop();
-                  },
-                  child: isAddPage() ? const Text('追加') : const Text('更新'),
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 240),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (isAddPage()) {
+                        // タスクの追加
+                        await dbCollection.add({
+                          'userId': userId,
+                          'taskName': nameController.text,
+                          'taskDetail': detailController.text,
+                          'genre': dropdownValue,
+                          'createdTime': Timestamp.now().toDate(),
+                          'updatedTime': Timestamp.now().toDate(),
+                        });
+                      } else {
+                        // タスクの更新
+                        await dbCollection
+                            .doc(task!.documentId)
+                            .update({
+                              'taskName': nameController.text,
+                              'taskDetail': detailController.text,
+                              'genre': dropdownValue,
+                              'updatedTime': Timestamp.now(),
+                            })
+                            .then((value) => print("User Updated"))
+                            .catchError(
+                                (error) => print("Failed to update user: $error"));
+                      }
+                      // タスク一覧へ戻る
+                      Navigator.of(context).pop();
+                    },
+                    child: isAddPage() ? const Text('追加') : const Text('更新'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

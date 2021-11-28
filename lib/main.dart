@@ -6,6 +6,7 @@ import 'package:todo_app/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Firebaseの初期化
   await Firebase.initializeApp();
   // ユーザー情報の取得
   final User? currentUser = FirebaseAuth.instance.currentUser;
