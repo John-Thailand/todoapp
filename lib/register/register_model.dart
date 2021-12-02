@@ -38,6 +38,8 @@ class RegisterModel extends ChangeNotifier {
         await doc.set({
           'userId': userId,
           'email': email,
+          'userName': '',
+          'userImageURL': '',
           'createdTime': Timestamp.now(),
           'updatedTime': Timestamp.now(),
         });

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/components/custom_bar.dart';
 import 'package:todo_app/models/task.dart';
 import 'package:todo_app/models/task_list.dart';
+import 'package:todo_app/other/other_page.dart';
 import 'package:todo_app/style.dart';
 import 'package:todo_app/task_operation/task_operation_page.dart';
 
@@ -26,10 +27,47 @@ class TaskListPage extends StatelessWidget {
   Widget? allPage;
 
 
-  ListTile makeListTile(Task task, TaskList model, BuildContext context) {
+  // リストを作成する関数
+  ListTile makeListTile(Task task, TaskList model, BuildContext context, bool isAllTaskPage) {
     return ListTile(
-      title: Text(task.taskName!),
-      leading: SizedBox(
+      title: isAllTaskPage
+      // ユーザー名を記載
+      ? task.user!.userName != ''
+        ? Text(task.user!.userName)
+        : const Text('未設定')
+      // タスク名を記載
+      : task.taskName != ''
+        ? Text(task.taskName!)
+        : const Text('未設定'),
+      subtitle: isAllTaskPage
+      // タスク名を記載
+      ? task.taskName != ''
+        ? Text(task.taskName!)
+        : const Text('未設定')
+      // ジャンルを設定
+      : Text(task.genre!),
+      leading: InkWell(
+        // 全てページかつ他のユーザーの場合
+        onTap: isAllTaskPage && userId != task.userId
+        ? () async {
+            // Othersページに遷移
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtherPage(),
+              ),
+            );
+          }
+        : null,
+        child: CircleAvatar(
+            backgroundImage: task.user?.userImageURL == ''
+              ? const AssetImage('assets/images/account.png')
+              : NetworkImage(task.user!.userImageURL) as ImageProvider,
+            backgroundColor: customColor.bodyColor,
+            radius: 52,
+          ),
+      ),
+      trailing: SizedBox(
         width: 80,
         child: Row(
           children: [
@@ -91,12 +129,17 @@ class TaskListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<TaskList>(
       create: (_) =>
-          TaskList()..fetchTaskList(userId: userId, isAllTask: false)..fetchTaskList(userId: userId, isAllTask: true),
+          TaskList()
+          ..fetchTaskList(userId: userId, isAllTask: false)
+          ..fetchTaskList(userId: userId, isAllTask: true),
       child: Consumer<TaskList>(builder: (context, model, child) {
+        // 自身のタスクが存在する場合
         if (model.myTaskList != null) {
-          myListTiles = model.myTaskList!
-              .map((task) => makeListTile(task, model, context))
-              .toList();
+          // 自身のタスクの情報を記載したリストタイルのリストを代入
+          myListTiles = model.myTaskList!.map(
+            (task) => makeListTile(task, model, context, false)
+            ).toList();
+          // 自身のタスクを表示したページ
           myPage = Container(
             color: customColor.bodyColor,
             child: ListView(
@@ -106,10 +149,13 @@ class TaskListPage extends StatelessWidget {
         } else {
           myPage = const CircularProgressIndicator();
         }
+        // 全てのタスクが存在する場合
         if (model.allTaskList != null) {
-          allListTiles = model.allTaskList!
-              .map((task) => makeListTile(task, model, context))
-              .toList();
+          // 全てのタスクの情報を記載したリストタイルのリストを代入
+          allListTiles = model.allTaskList!.map(
+            (task) => makeListTile(task, model, context, true)
+            ).toList();
+          // 全てのタスクを表示したページ
           allPage = Container(
             color: customColor.bodyColor,
             child: ListView(

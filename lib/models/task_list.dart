@@ -1,11 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:todo_app/models/task.dart';
+import 'package:todo_app/models/user.dart';
 
 class TaskList extends ChangeNotifier {
   List<Task>? myTaskList;
   List<Task>? allTaskList;
   final FirebaseFirestore db = FirebaseFirestore.instance;
+  String? userName;
+  String? userImageURL;
+  
+  void getUserInfo({required String userId, required Task task}) async {
+    // ユーザー情報の取得
+    final snapshot = await FirebaseFirestore.instance.collection('users').doc(task.userId).get();
+    // データの取得
+    final data = snapshot.data();
+    // ユーザー名
+    userName = data?['userName'];
+    // プロフィール画像の取得
+    userImageURL = data?['userImageURL'];
+  }
 
   void fetchTaskList({required String userId, required bool isAllTask}) async {
     final QuerySnapshot snapshot;
@@ -32,13 +46,12 @@ class TaskList extends ChangeNotifier {
       Map<String, dynamic> data = document.data() as Map<String, dynamic>;
       final String documentId = document.id;
       final String taskName = data['taskName'];
+      final String userId = data['userId'];
       final DateTime createdTime = data['createdTime'].toDate();
       final DateTime updatedTime = data['updatedTime'].toDate();
       String? taskDetail;
       String? genre;
 
-      print(data['taskDetail']);
-      print(data['genre']);
       if (data['taskDetail'] != null) {
         taskDetail = data['taskDetail'];
       }
@@ -57,6 +70,7 @@ class TaskList extends ChangeNotifier {
         updatedTime: updatedTime,
         isFavorite: false,
         favoriteCount: 0,
+        userId: userId,
       );
     }).toList();
 
@@ -89,6 +103,39 @@ class TaskList extends ChangeNotifier {
       task.favoriteCount = countSnapshot.size;
     }
 
+    // ユーザー情報を取得するための変数
+    DocumentSnapshot<Map<String, dynamic>> userSnapshot;
+    // それぞれのタスクを処理
+    for (Task task in localTaskList) {
+      // タスクに紐づいたユーザー情報を取得
+      userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(task.userId)
+          .get();
+      // データの取得
+      final Map<String, dynamic>? data = userSnapshot.data();
+      // ユーザー名
+      String userName = '';
+      // ユーザー名が空でなければ
+      if(data?['userName'] != '') {
+        userName = data!['userName'];
+      }
+      // プロフィール画像
+      String userImageURL = '';
+      // プロフィール画像が空でなければ
+      if(data?['userImageURL'] != '') {
+        userImageURL = data!['userImageURL'];
+      }
+      // ユーザー情報を取得
+      User user = User(
+        userId: task.userId, 
+        userName: userName, 
+        userImageURL: userImageURL
+      );
+      // ユーザー情報を格納
+      task.user = user;
+    }
+
     if (isAllTask == true) {
       // 全てのタスクのみ取得
       allTaskList = localTaskList;
@@ -108,6 +155,7 @@ class TaskList extends ChangeNotifier {
       'favoriteUserId': favoriteUserId,
       'createdTime': Timestamp.now().toDate(),
     });
+    
   }
 
   // タスクのお気に入り数をカウントアップ
