@@ -3,6 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class OtherModel extends ChangeNotifier {
+  OtherModel({required this.myUserId, required this.otherUserId});
+
+  // 自身のユーザーID
+  final String myUserId;
+  // 他のユーザーID
+  final String otherUserId;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // ローディング中であるか

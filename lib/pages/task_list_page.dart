@@ -54,7 +54,7 @@ class TaskListPage extends StatelessWidget {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => OtherPage(),
+                builder: (context) => OtherPage(myUserId: userId, otherUserId: task.userId),
               ),
             );
           }

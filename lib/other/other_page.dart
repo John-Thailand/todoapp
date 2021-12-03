@@ -8,7 +8,11 @@ import 'package:todo_app/style.dart';
 import 'other_model.dart';
 
 class OtherPage extends StatelessWidget {
-  OtherPage({ Key? key }) : super(key: key);
+  OtherPage({ Key? key , required this.myUserId, required this.otherUserId,}) : super(key: key);
+  // 自身のユーザーID
+  final String myUserId;
+  // 他のユーザーID
+  final String otherUserId;
   // 固定値となる変数は、build外で設定する
   final CustomColor customColor = CustomColor();
 
@@ -18,7 +22,7 @@ class OtherPage extends StatelessWidget {
     final Color primaryColor = Theme.of(context).primaryColor;
     
     return ChangeNotifierProvider<OtherModel>(
-      create: (_) => OtherModel()..fetchUser(),
+      create: (_) => OtherModel(myUserId: myUserId, otherUserId: otherUserId)..fetchUser(),
       child: Scaffold(
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -86,19 +90,13 @@ class OtherPage extends StatelessWidget {
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    // プロフィール編集ページに遷移
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                        EditProfilePage(userImageURL: model.userImageURL, userName: model.userName),
-                                      ),
-                                    );
+                                    // 友達追加
+                                    
                                     // ユーザー情報が変更されている可能性があるため、ユーザー情報を取得
                                     model.fetchUser();
                                   },
                                   child: Icon(
-                                    Icons.edit,
+                                    Icons.person_add_rounded,
                                     color: customColor.mainColor
                                   ),
                                   style: ElevatedButton.styleFrom(
