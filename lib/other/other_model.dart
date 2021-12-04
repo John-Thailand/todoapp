@@ -18,14 +18,15 @@ class OtherModel extends ChangeNotifier {
   String userImageURL = '';
   // ユーザー名
   String? userName;
-  // Eメール
-  String? email;
+  // ユーザーをフォロー中であるか
+  bool isFollow = false;
 
   // ローディングを開始
   void startLoading() {
     isLoading = true;
     notifyListeners();
   }
+
   // ローディングを終了
   void endLoading() {
     isLoading = false;
@@ -33,22 +34,26 @@ class OtherModel extends ChangeNotifier {
   }
 
   // ユーザー情報の取得
-  void fetchUser() async {
+  void fetchOtherUser() async {
     // ローディングを開始
     startLoading();
 
-    final String userId = FirebaseAuth.instance.currentUser!.uid;
-    final snapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    // 1. プロフィール画像と名前を取得するための処理
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(otherUserId)
+        .get();
+    // データを取得
     final data = snapshot.data();
 
     // 画像のURL
-    if(data?['userImageURL'] != null && data?['userImageURL'] != '') {
+    if (data?['userImageURL'] != null && data?['userImageURL'] != '') {
       // userImageURLを格納する
       userImageURL = data!['userImageURL'];
     }
 
     // ユーザー名
-    if(data?['userName'] != null && data?['userName'] != '') {
+    if (data?['userName'] != null && data?['userName'] != '') {
       // userNameを格納する
       userName = data!['userName'];
     } else {
@@ -56,73 +61,75 @@ class OtherModel extends ChangeNotifier {
       userName = null;
     }
 
-    // Eメール
-    if(data?['email'] != null) {
-      // emailを格納する
-      email = data!['email'];
+    // 2. フォロー中のユーザーであるか確認するための処理
+    final DocumentSnapshot<Map<String, dynamic>> followDoc =
+        await FirebaseFirestore.instance
+            .collection('follow')
+            .doc(myUserId)
+            .collection('followingUser')
+            .doc(otherUserId)
+            .get();
+
+    // データが存在する場合
+    if (followDoc.exists) {
+      // フォローしている
+      isFollow = true;
     } else {
-      // nullを格納する
-      email = null;
+      // フォローしていない
+      isFollow = false;
     }
 
     // ローディングを終了
     endLoading();
   }
 
-  // ログアウト
-  Future logout() async {
-    await FirebaseAuth.instance.signOut();
+  // フォローする
+  Future<bool> follow() async {
+    // 処理結果
+    bool result = true;
+
+    try {
+      // 1.follow情報を追加
+      await FirebaseFirestore.instance
+          .collection('follow')
+          .doc(myUserId)
+          .collection('followingUser')
+          .doc(otherUserId)
+          .set({
+        'createdTime': Timestamp.now(),
+      });
+      // 2. フォローする
+      isFollow = true;
+    } catch (e) {
+      // 処理失敗
+      result = false;
+    }
+
+    // 処理結果の返却
+    return result;
   }
 
-  // パスワード再設定
-  Future sendPasswordResetEmail(BuildContext context) async {
+  // フォローを解除する
+  Future<bool> unfollow() async {
+    // 処理結果
+    bool result = true;
+
     try {
-      // パスワードを再設定するか確認するダイアログ
-      bool? isResetedPassword = await showDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('確認'),
-            content: const Text('パスワードを変更しますか？'),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('NO'),
-                onPressed: () => Navigator.of(context).pop(false),
-              ),
-              TextButton(
-                child: const Text('YES'),
-                onPressed: () => Navigator.of(context).pop(true),
-              ),
-            ],
-          );
-        },
-      );
-      // パスワードを再設定する場合
-      if(isResetedPassword == true) {
-        // パスワードを再設定
-        await _auth.sendPasswordResetEmail(email: email!);
-        // メールを確認する旨をダイアログで表示する
-        await showDialog<bool>(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('完了'),
-              content: const Text('パスワード変更するためのメールを送信しました。'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            );
-          },
-        );
-        print('sendPasswordResetEmail: success');
-      }
-    } catch (error) {
-      print('sendPasswordResetEmail: ${error.toString()}');
+      // 1. フォロー情報の削除
+      FirebaseFirestore.instance
+          .collection('follow')
+          .doc(myUserId)
+          .collection('followingUser')
+          .doc(otherUserId)
+          .delete();
+      // 2. フォローしていない
+      isFollow = false;
+    } catch (e) {
+      // 処理失敗
+      result = false;
     }
+
+    // 処理結果の返却
+    return result;
   }
 }

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/edit_profile/edit_profile_page.dart';
-import 'package:todo_app/login/login_page.dart';
-import 'package:todo_app/reset_mail/reset_mail_page.dart';
+import 'package:todo_app/components/dialog.dart' as dialog;
 import 'package:todo_app/style.dart';
 
 import 'other_model.dart';
 
 class OtherPage extends StatelessWidget {
-  OtherPage({ Key? key , required this.myUserId, required this.otherUserId,}) : super(key: key);
+  OtherPage({
+    Key? key,
+    required this.myUserId,
+    required this.otherUserId,
+  }) : super(key: key);
   // 自身のユーザーID
   final String myUserId;
   // 他のユーザーID
@@ -20,45 +22,27 @@ class OtherPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // CircularProgressIndicatorの色を設定
     final Color primaryColor = Theme.of(context).primaryColor;
-    
+
     return ChangeNotifierProvider<OtherModel>(
-      create: (_) => OtherModel(myUserId: myUserId, otherUserId: otherUserId)..fetchUser(),
+      create: (_) => OtherModel(myUserId: myUserId, otherUserId: otherUserId)
+        ..fetchOtherUser(),
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text('アカウントページ'),
+        ),
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Center(
               child: Consumer<OtherModel>(builder: (context, model, child) {
-                if(model.isLoading) {
+                if (model.isLoading) {
                   return CircularProgressIndicator(color: primaryColor);
                 } else {
                   return Stack(
                     children: [
                       Column(
                         children: [
-                          const SizedBox(height: 16.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                onPressed: () async {
-                                  // ログアウト
-                                  await model.logout();
-                                  // ログインページに遷移
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const LoginPage()),
-                                    (_) => false
-                                  );
-                                }, 
-                                icon: const Icon(Icons.logout),
-                                color: customColor.mainColor,
-                                tooltip: 'ログアウト',
-                              ),
-                            ],
-                          ),
                           const SizedBox(height: 32.0),
                           Row(
                             children: [
@@ -70,8 +54,10 @@ class OtherPage extends StatelessWidget {
                                   children: [
                                     CircleAvatar(
                                       backgroundImage: model.userImageURL == ''
-                                        ? const AssetImage('assets/images/account.png')
-                                        : NetworkImage(model.userImageURL) as ImageProvider,
+                                          ? const AssetImage(
+                                              'assets/images/account.png')
+                                          : NetworkImage(model.userImageURL)
+                                              as ImageProvider,
                                       backgroundColor: customColor.bodyColor,
                                       radius: 52,
                                     ),
@@ -90,41 +76,42 @@ class OtherPage extends StatelessWidget {
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    // 友達追加
-                                    
+                                    // 処理結果
+                                    bool result = true;
+                                    // フォローしている場合
+                                    if (model.isFollow) {
+                                      // フォローしない
+                                      result = await model.unfollow();
+                                    } else {
+                                      // フォローする
+                                      result = await model.follow();
+                                    }
+                                    // 処理が失敗した場合
+                                    if (!result) {
+                                      // エラーダイアログを表示
+                                      dialog.okDialog(
+                                          context, 'エラー', '問題が発生しました。');
+                                    }
                                     // ユーザー情報が変更されている可能性があるため、ユーザー情報を取得
-                                    model.fetchUser();
+                                    model.fetchOtherUser();
                                   },
-                                  child: Icon(
-                                    Icons.person_add_rounded,
-                                    color: customColor.mainColor
-                                  ),
+                                  child: model.isFollow
+                                      ? Icon(Icons.person_remove_rounded,
+                                          color: customColor.whiteColor)
+                                      : Icon(Icons.person_add_rounded,
+                                          color: customColor.mainColor),
                                   style: ElevatedButton.styleFrom(
                                     elevation: 8.0,
                                     shape: const CircleBorder(),
                                     padding: const EdgeInsets.all(20),
-                                    primary: customColor.whiteColor, // <-- Button color
-                                    onPrimary: customColor.mainColor, // <-- Splash color
+                                    primary: model.isFollow
+                                        ? customColor.mainColor
+                                        : customColor
+                                            .whiteColor, // <-- Button color
+                                    onPrimary: model.isFollow
+                                        ? customColor.whiteColor
+                                        : customColor.mainColor,
                                   ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 64.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.email,
-                                color: customColor.mainColor,
-                                size: 32.0,
-                              ),
-                              const SizedBox(width: 16.0),
-                              Text(
-                                model.email ?? 'メールアドレスなし',
-                                style: TextStyle(
-                                  color: customColor.mainColor,
-                                  fontSize: 16.0,
                                 ),
                               ),
                             ],
