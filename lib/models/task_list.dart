@@ -4,15 +4,23 @@ import 'package:todo_app/models/task.dart';
 import 'package:todo_app/models/user.dart';
 
 class TaskList extends ChangeNotifier {
+  // 自身のタスクリスト
   List<Task>? myTaskList;
+  // 全てのタスクリスト
   List<Task>? allTaskList;
-  final FirebaseFirestore db = FirebaseFirestore.instance;
+  // ユーザー名
   String? userName;
+  // プロフィール画像
   String? userImageURL;
-  
+  // Firestoreのインスタンス
+  final FirebaseFirestore db = FirebaseFirestore.instance;
+
   void getUserInfo({required String userId, required Task task}) async {
     // ユーザー情報の取得
-    final snapshot = await FirebaseFirestore.instance.collection('users').doc(task.userId).get();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(task.userId)
+        .get();
     // データの取得
     final data = snapshot.data();
     // ユーザー名
@@ -117,21 +125,18 @@ class TaskList extends ChangeNotifier {
       // ユーザー名
       String userName = '';
       // ユーザー名が空でなければ
-      if(data?['userName'] != '') {
+      if (data?['userName'] != '') {
         userName = data!['userName'];
       }
       // プロフィール画像
       String userImageURL = '';
       // プロフィール画像が空でなければ
-      if(data?['userImageURL'] != '') {
+      if (data?['userImageURL'] != '') {
         userImageURL = data!['userImageURL'];
       }
       // ユーザー情報を取得
       User user = User(
-        userId: task.userId, 
-        userName: userName, 
-        userImageURL: userImageURL
-      );
+          userId: task.userId, userName: userName, userImageURL: userImageURL);
       // ユーザー情報を格納
       task.user = user;
     }
@@ -155,7 +160,6 @@ class TaskList extends ChangeNotifier {
       'favoriteUserId': favoriteUserId,
       'createdTime': Timestamp.now().toDate(),
     });
-    
   }
 
   // タスクのお気に入り数をカウントアップ
