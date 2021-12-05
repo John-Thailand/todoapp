@@ -11,6 +11,7 @@ class OtherModel extends ChangeNotifier {
   final String otherUserId;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore db = FirebaseFirestore.instance;
 
   // ローディング中であるか
   bool isLoading = false;
@@ -18,6 +19,10 @@ class OtherModel extends ChangeNotifier {
   String userImageURL = '';
   // ユーザー名
   String? userName;
+  // フォロー数
+  int followNumber = 0;
+  // フォロワー数
+  int followerNumber = 0;
   // ユーザーをフォロー中であるか
   bool isFollow = false;
 
@@ -38,7 +43,24 @@ class OtherModel extends ChangeNotifier {
     // ローディングを開始
     startLoading();
 
-    // 1. プロフィール画像と名前を取得するための処理
+    // 1 プロフィール画像と名前を取得するための処理
+    await getUserInfo();
+
+    // 2. フォロー中のユーザーであるか確認するための処理
+    await isFollowed();
+
+    // 3. フォロー数を取得するための処理
+    await getFollowNumber();
+
+    // 4. フォロワー数を取得するための処理
+    await getFollowerNumber();
+
+    // ローディングを終了
+    endLoading();
+  }
+
+  // プロフィール画像と名前を取得するための処理
+  Future<void> getUserInfo() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(otherUserId)
@@ -60,8 +82,10 @@ class OtherModel extends ChangeNotifier {
       // nullを格納する
       userName = null;
     }
+  }
 
-    // 2. フォロー中のユーザーであるか確認するための処理
+  // フォロー中のユーザーであるか確認するための処理
+  Future<void> isFollowed() async {
     final DocumentSnapshot<Map<String, dynamic>> followDoc =
         await FirebaseFirestore.instance
             .collection('follow')
@@ -78,26 +102,75 @@ class OtherModel extends ChangeNotifier {
       // フォローしていない
       isFollow = false;
     }
+  }
 
-    // ローディングを終了
-    endLoading();
+  // フォロー数を取得するための処理
+  Future<void> getFollowNumber() async {
+    final QuerySnapshot<Map<String, dynamic>> followSnap =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(otherUserId)
+            .collection('followingUser')
+            .get();
+
+    // データが存在する場合
+    if (followSnap.docs.isNotEmpty) {
+      // ドキュメント数を格納
+      followNumber = followSnap.docs.length;
+    } else {
+      // 0を格納
+      followNumber = 0;
+    }
+  }
+
+  // フォロワー数を取得するための処理
+  Future<void> getFollowerNumber() async {
+    final QuerySnapshot<Map<String, dynamic>> followerDoc =
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(otherUserId)
+            .collection('followeringUser')
+            .get();
+
+    // データが存在する場合
+    if (followerDoc.docs.isNotEmpty) {
+      // ドキュメント数を格納
+      followerNumber = followerDoc.docs.length;
+    } else {
+      // 0を格納
+      followerNumber = 0;
+    }
   }
 
   // フォローする
+  // 未完了
   Future<bool> follow() async {
     // 処理結果
     bool result = true;
 
     try {
+      // バッチ処理
+      WriteBatch batch = db.batch();
+
       // 1.follow情報を追加
-      await FirebaseFirestore.instance
-          .collection('follow')
+      DocumentReference<Map<String, dynamic>> followRef = FirebaseFirestore
+          .instance
+          .collection('users')
           .doc(myUserId)
           .collection('followingUser')
+          .doc(otherUserId);
+
+      batch.set(followRef, {'createdTime': Timestamp.now()});
+
+      DocumentReference<Map<String, dynamic>> followerRef = FirebaseFirestore
+          .instance
+          .collection('users')
           .doc(otherUserId)
-          .set({
-        'createdTime': Timestamp.now(),
-      });
+          .collection('followeringUser')
+          .doc(myUserId);
+
+      batch.set(followerRef, {'createdTime': Timestamp.now()});
+
       // 2. フォローする
       isFollow = true;
     } catch (e) {
@@ -110,6 +183,7 @@ class OtherModel extends ChangeNotifier {
   }
 
   // フォローを解除する
+  // 未完了
   Future<bool> unfollow() async {
     // 処理結果
     bool result = true;

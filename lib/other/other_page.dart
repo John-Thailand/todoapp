@@ -116,6 +116,25 @@ class OtherPage extends StatelessWidget {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 24.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Column(
+                                children: [
+                                  const Text('フォロー'),
+                                  Text(model.followNumber.toString()),
+                                ],
+                              ),
+                              const SizedBox(width: 64.0),
+                              Column(
+                                children: [
+                                  const Text('フォロワー'),
+                                  Text(model.followNumber.toString()),
+                                ],
+                              ),
+                            ],
+                          ),
                           Divider(
                             height: 120.0,
                             thickness: 1.0,
