@@ -8,7 +8,7 @@ import 'package:todo_app/style.dart';
 import 'my_model.dart';
 
 class MyPage extends StatelessWidget {
-  MyPage({ Key? key }) : super(key: key);
+  MyPage({Key? key}) : super(key: key);
   // 固定値となる変数は、build外で設定する
   final CustomColor customColor = CustomColor();
 
@@ -16,7 +16,7 @@ class MyPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // CircularProgressIndicatorの色を設定
     final Color primaryColor = Theme.of(context).primaryColor;
-    
+
     return ChangeNotifierProvider<MyModel>(
       create: (_) => MyModel()..fetchUser(),
       child: Scaffold(
@@ -26,7 +26,7 @@ class MyPage extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Center(
               child: Consumer<MyModel>(builder: (context, model, child) {
-                if(model.isLoading) {
+                if (model.isLoading) {
                   return CircularProgressIndicator(color: primaryColor);
                 } else {
                   return Stack(
@@ -43,12 +43,12 @@ class MyPage extends StatelessWidget {
                                   await model.logout();
                                   // ログインページに遷移
                                   Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const LoginPage()),
-                                    (_) => false
-                                  );
-                                }, 
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginPage()),
+                                      (_) => false);
+                                },
                                 icon: const Icon(Icons.logout),
                                 color: customColor.mainColor,
                                 tooltip: 'ログアウト',
@@ -66,8 +66,10 @@ class MyPage extends StatelessWidget {
                                   children: [
                                     CircleAvatar(
                                       backgroundImage: model.userImageURL == ''
-                                        ? const AssetImage('assets/images/account.png')
-                                        : NetworkImage(model.userImageURL) as ImageProvider,
+                                          ? const AssetImage(
+                                              'assets/images/account.png')
+                                          : NetworkImage(model.userImageURL)
+                                              as ImageProvider,
                                       backgroundColor: customColor.bodyColor,
                                       radius: 52,
                                     ),
@@ -90,23 +92,24 @@ class MyPage extends StatelessWidget {
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                        EditProfilePage(userImageURL: model.userImageURL, userName: model.userName),
+                                        builder: (context) => EditProfilePage(
+                                            userImageURL: model.userImageURL,
+                                            userName: model.userName),
                                       ),
                                     );
                                     // ユーザー情報が変更されている可能性があるため、ユーザー情報を取得
                                     model.fetchUser();
                                   },
-                                  child: Icon(
-                                    Icons.edit,
-                                    color: customColor.mainColor
-                                  ),
+                                  child: Icon(Icons.edit,
+                                      color: customColor.mainColor),
                                   style: ElevatedButton.styleFrom(
                                     elevation: 8.0,
                                     shape: const CircleBorder(),
                                     padding: const EdgeInsets.all(20),
-                                    primary: customColor.whiteColor, // <-- Button color
-                                    onPrimary: customColor.mainColor, // <-- Splash color
+                                    primary: customColor
+                                        .whiteColor, // <-- Button color
+                                    onPrimary: customColor
+                                        .mainColor, // <-- Splash color
                                   ),
                                 ),
                               ),
@@ -160,7 +163,7 @@ class MyPage extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                    ResetMailPage(nowEmail: model.email!),
+                                        ResetMailPage(nowEmail: model.email!),
                                   ),
                                 );
                               },

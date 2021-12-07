@@ -93,7 +93,7 @@ class OtherPage extends StatelessWidget {
                                           context, 'エラー', '問題が発生しました。');
                                     }
                                     // ユーザー情報が変更されている可能性があるため、ユーザー情報を取得
-                                    model.fetchOtherUser();
+                                    // model.fetchOtherUser();
                                   },
                                   child: model.isFollow
                                       ? Icon(Icons.person_remove_rounded,
@@ -120,18 +120,28 @@ class OtherPage extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Column(
-                                children: [
-                                  const Text('フォロー'),
-                                  Text(model.followNumber.toString()),
-                                ],
+                              InkWell(
+                                onTap: () {
+                                  // TODO フォロワー一覧画面に遷移
+                                },
+                                child: Column(
+                                  children: [
+                                    const Text('フォロー'),
+                                    Text(model.followNumber.toString()),
+                                  ],
+                                ),
                               ),
                               const SizedBox(width: 64.0),
-                              Column(
-                                children: [
-                                  const Text('フォロワー'),
-                                  Text(model.followNumber.toString()),
-                                ],
+                              InkWell(
+                                onTap: () {
+                                  // TODO フォロー一覧画面に遷移
+                                },
+                                child: Column(
+                                  children: [
+                                    const Text('フォロワー'),
+                                    Text(model.followerNumber.toString()),
+                                  ],
+                                ),
                               ),
                             ],
                           ),

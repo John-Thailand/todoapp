@@ -88,7 +88,7 @@ class OtherModel extends ChangeNotifier {
   Future<void> isFollowed() async {
     final DocumentSnapshot<Map<String, dynamic>> followDoc =
         await FirebaseFirestore.instance
-            .collection('follow')
+            .collection('users')
             .doc(myUserId)
             .collection('followingUser')
             .doc(otherUserId)
@@ -143,7 +143,6 @@ class OtherModel extends ChangeNotifier {
   }
 
   // フォローする
-  // 未完了
   Future<bool> follow() async {
     // 処理結果
     bool result = true;
@@ -162,6 +161,7 @@ class OtherModel extends ChangeNotifier {
 
       batch.set(followRef, {'createdTime': Timestamp.now()});
 
+      // 2. follower情報を追加
       DocumentReference<Map<String, dynamic>> followerRef = FirebaseFirestore
           .instance
           .collection('users')
@@ -171,37 +171,68 @@ class OtherModel extends ChangeNotifier {
 
       batch.set(followerRef, {'createdTime': Timestamp.now()});
 
-      // 2. フォローする
+      // 3. コミット
+      await batch.commit();
+
+      // 4. フォローする
       isFollow = true;
+
+      // 5. フォロワー数の変更
+      followerNumber++;
     } catch (e) {
       // 処理失敗
       result = false;
     }
+
+    notifyListeners();
 
     // 処理結果の返却
     return result;
   }
 
   // フォローを解除する
-  // 未完了
   Future<bool> unfollow() async {
     // 処理結果
     bool result = true;
 
     try {
+      // バッチ処理
+      WriteBatch batch = db.batch();
+
       // 1. フォロー情報の削除
-      FirebaseFirestore.instance
-          .collection('follow')
+      DocumentReference<Map<String, dynamic>> followRef = FirebaseFirestore
+          .instance
+          .collection('users')
           .doc(myUserId)
           .collection('followingUser')
+          .doc(otherUserId);
+
+      batch.delete(followRef);
+
+      // 2. follower情報を追加
+      DocumentReference<Map<String, dynamic>> followerRef = FirebaseFirestore
+          .instance
+          .collection('users')
           .doc(otherUserId)
-          .delete();
-      // 2. フォローしていない
+          .collection('followeringUser')
+          .doc(myUserId);
+
+      batch.delete(followerRef);
+
+      // 3. コミット
+      await batch.commit();
+
+      // 4. フォローを解除
       isFollow = false;
+
+      // 5. フォロワー数の変更
+      followerNumber--;
     } catch (e) {
       // 処理失敗
       result = false;
     }
+
+    notifyListeners();
 
     // 処理結果の返却
     return result;
