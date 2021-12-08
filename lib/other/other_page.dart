@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/components/dialog.dart' as dialog;
+import 'package:todo_app/follow_follower_list/fololow_follower_list_page.dart';
 import 'package:todo_app/style.dart';
 
 import 'other_model.dart';
@@ -121,8 +122,18 @@ class OtherPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               InkWell(
-                                onTap: () {
-                                  // TODO フォロワー一覧画面に遷移
+                                onTap: () async {
+                                  // フォロー一覧ページに遷移
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          FollowFollowerListPage(
+                                        isFollow: true,
+                                        otherUserId: otherUserId,
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: Column(
                                   children: [
@@ -134,7 +145,17 @@ class OtherPage extends StatelessWidget {
                               const SizedBox(width: 64.0),
                               InkWell(
                                 onTap: () {
-                                  // TODO フォロー一覧画面に遷移
+                                  // フォロワー一覧画面に遷移
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          FollowFollowerListPage(
+                                        isFollow: false,
+                                        otherUserId: otherUserId,
+                                      ),
+                                    ),
+                                  );
                                 },
                                 child: Column(
                                   children: [
