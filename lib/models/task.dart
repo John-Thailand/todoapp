@@ -1,4 +1,4 @@
-import 'package:todo_app/models/user.dart';
+import 'package:todo_app/models/account.dart';
 
 class Task {
   Task({
@@ -23,5 +23,5 @@ class Task {
   DateTime? updatedTime;
   bool isFavorite;
   int favoriteCount;
-  User? user;
+  Account? user;
 }

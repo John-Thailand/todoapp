@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:todo_app/models/task.dart';
-import 'package:todo_app/models/user.dart';
+import 'package:todo_app/models/account.dart';
 
 class TaskList extends ChangeNotifier {
   // 自身のタスクリスト
@@ -135,7 +135,7 @@ class TaskList extends ChangeNotifier {
         userImageURL = data!['userImageURL'];
       }
       // ユーザー情報を取得
-      User user = User(
+      Account user = Account(
           userId: task.userId, userName: userName, userImageURL: userImageURL);
       // ユーザー情報を格納
       task.user = user;

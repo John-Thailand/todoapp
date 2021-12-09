@@ -1,5 +1,5 @@
-class User {
-  User({
+class Account {
+  Account({
     required this.userId,
     required this.userName,
     required this.userImageURL,
