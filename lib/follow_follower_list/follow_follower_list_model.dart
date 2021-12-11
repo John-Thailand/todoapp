@@ -29,6 +29,7 @@ class FollowFollowerListModel extends ChangeNotifier {
 
   // ユーザーリストの取得
   void fetchUserList({required String userId, required bool isFollow}) async {
+    // スナップショット
     final QuerySnapshot snapshot;
     final QuerySnapshot usersSnapshot;
 
