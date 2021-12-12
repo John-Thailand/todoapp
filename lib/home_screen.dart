@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/message/message_page.dart';
 import 'package:todo_app/mypage/my_page.dart';
 import 'package:todo_app/pages/task_list_page.dart';
 
@@ -14,6 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _pages = [
     TaskListPage(),
+    const MessagePage(),
     MyPage(),
   ];
 
@@ -28,6 +30,10 @@ class _HomeScreenState extends State<HomeScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.list),
               label: 'タスク一覧',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.chat),
+              label: 'メッセージ',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.account_circle_outlined),
