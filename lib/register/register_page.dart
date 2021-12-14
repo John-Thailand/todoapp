@@ -17,47 +17,53 @@ class RegisterPage extends StatelessWidget {
           child: Consumer<RegisterModel>(builder: (context, model, child) {
             return Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: model.titleController,
-                        decoration: const InputDecoration(
-                          hintText: 'Email',
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        TextField(
+                          controller: model.titleController,
+                          decoration: const InputDecoration(
+                            hintText: 'Email',
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16.0),
-                      TextField(
-                        controller: model.authorController,
-                        decoration: const InputDecoration(
-                          hintText: 'パスワード',
+                        const SizedBox(height: 16.0),
+                        TextField(
+                          controller: model.authorController,
+                          decoration: const InputDecoration(
+                            hintText: 'パスワード',
+                          ),
+                          obscureText: true,
                         ),
-                        obscureText: true,
-                      ),
-                      const SizedBox(height: 8.0),
-                      ElevatedButton(
-                        onPressed: () async {
-                          model.startLoading();
-                          // 更新の処理
-                          try {
-                            await model.signup();
-                            // タスクリストページに遷移
-                            Navigator.of(context).pop();
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(e.toString()),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          } finally {
-                            model.endLoading();
-                          }
-                        },
-                        child: const Text('登録する'),
-                      ),
-                    ],
+                        const SizedBox(height: 8.0),
+                        ElevatedButton(
+                          onPressed: () async {
+                            model.startLoading();
+                            // 更新の処理
+                            try {
+                              await model.signup();
+                              // タスクリストページに遷移
+                              Navigator.of(context).pop();
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(e.toString()),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            } finally {
+                              model.endLoading();
+                            }
+                          },
+                          child: const Text('登録する'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 if (model.isLoading)
