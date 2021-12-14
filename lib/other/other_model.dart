@@ -12,6 +12,7 @@ class OtherModel extends ChangeNotifier {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore db = FirebaseFirestore.instance;
+  final roomsRef = FirebaseFirestore.instance.collection('rooms');
 
   // ローディング中であるか
   bool isLoading = false;
@@ -236,5 +237,10 @@ class OtherModel extends ChangeNotifier {
 
     // 処理結果の返却
     return result;
+  }
+
+  // Roomの作成
+  Future<void> makeRoom(String myUserId, String otherUserId) async {
+    roomsRef.where(field);
   }
 }

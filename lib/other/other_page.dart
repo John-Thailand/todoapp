@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app/chat/chat_page.dart';
 import 'package:todo_app/components/dialog.dart' as dialog;
 import 'package:todo_app/follow_follower_list/fololow_follower_list_page.dart';
 import 'package:todo_app/style.dart';
@@ -75,44 +76,75 @@ class OtherPage extends StatelessWidget {
                                 ),
                               ),
                               Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    // 処理結果
-                                    bool result = true;
-                                    // フォローしている場合
-                                    if (model.isFollow) {
-                                      // フォローしない
-                                      result = await model.unfollow();
-                                    } else {
-                                      // フォローする
-                                      result = await model.follow();
-                                    }
-                                    // 処理が失敗した場合
-                                    if (!result) {
-                                      // エラーダイアログを表示
-                                      dialog.okDialog(
-                                          context, 'エラー', '問題が発生しました。');
-                                    }
-                                    // ユーザー情報が変更されている可能性があるため、ユーザー情報を取得
-                                    // model.fetchOtherUser();
-                                  },
-                                  child: model.isFollow
-                                      ? Icon(Icons.person_remove_rounded,
-                                          color: customColor.whiteColor)
-                                      : Icon(Icons.person_add_rounded,
-                                          color: customColor.mainColor),
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 8.0,
-                                    shape: const CircleBorder(),
-                                    padding: const EdgeInsets.all(20),
-                                    primary: model.isFollow
-                                        ? customColor.mainColor
-                                        : customColor
-                                            .whiteColor, // <-- Button color
-                                    onPrimary: model.isFollow
-                                        ? customColor.whiteColor
-                                        : customColor.mainColor,
-                                  ),
+                                child: Column(
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        // 処理結果
+                                        bool result = true;
+                                        // フォローしている場合
+                                        if (model.isFollow) {
+                                          // フォローしない
+                                          result = await model.unfollow();
+                                        } else {
+                                          // フォローする
+                                          result = await model.follow();
+                                        }
+                                        // 処理が失敗した場合
+                                        if (!result) {
+                                          // エラーダイアログを表示
+                                          dialog.okDialog(
+                                              context, 'エラー', '問題が発生しました。');
+                                        }
+                                        // ユーザー情報が変更されている可能性があるため、ユーザー情報を取得
+                                        // model.fetchOtherUser();
+                                      },
+                                      child: model.isFollow
+                                          ? Icon(Icons.person_remove_rounded,
+                                              color: customColor.whiteColor)
+                                          : Icon(Icons.person_add_rounded,
+                                              color: customColor.mainColor),
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 8.0,
+                                        shape: const CircleBorder(),
+                                        padding: const EdgeInsets.all(20),
+                                        primary: model.isFollow
+                                            ? customColor.mainColor
+                                            : customColor
+                                                .whiteColor, // <-- Button color
+                                        onPrimary: model.isFollow
+                                            ? customColor.whiteColor
+                                            : customColor.mainColor,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16.0),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        // Roomを作成したことがなければ、Roomを作成
+                                        await model.makeRoom(
+                                            myUserId, otherUserId);
+                                        // チャットページに遷移
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const ChatPage(),
+                                          ),
+                                        );
+                                      },
+                                      child: Icon(
+                                        Icons.chat,
+                                        color: customColor.mainColor,
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 8.0,
+                                        shape: const CircleBorder(),
+                                        padding: const EdgeInsets.all(20),
+                                        primary: customColor.whiteColor,
+                                        onPrimary: customColor.mainColor,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
