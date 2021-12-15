@@ -240,7 +240,43 @@ class OtherModel extends ChangeNotifier {
   }
 
   // Roomの作成
-  Future<void> makeRoom(String myUserId, String otherUserId) async {
-    roomsRef.where(field);
+  Future<bool> makeRoom(String myUserId, String otherUserId) async {
+    // 処理結果
+    bool result = true;
+    // roomが存在するか
+    bool isThereRoom = false;
+
+    try {
+      // Roomがあるのか確認
+      final snapshot =
+          await roomsRef.where('userIds', arrayContains: myUserId).get();
+
+      for (var room in snapshot.docs) {
+        print(room.get('userIds'));
+        // ユーザーIDsを取得
+        final localUserIds = room.get('userIds');
+        // ユーザーIDが存在する場合
+        if (localUserIds.contains(otherUserId)) {
+          isThereRoom = true;
+        }
+      }
+
+      if (!isThereRoom) {
+        // Roomを作成する前に配列を準備
+        final List<String> userIds = [myUserId, otherUserId];
+        // Roomを作成
+        await roomsRef.add({
+          'userIds': userIds,
+          'createdDateTime': Timestamp.now().toDate(),
+          'updatedDateTime': Timestamp.now().toDate(),
+        });
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      // 処理失敗
+      result = false;
+    }
+
+    return result;
   }
 }

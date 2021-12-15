@@ -121,16 +121,23 @@ class OtherPage extends StatelessWidget {
                                     ElevatedButton(
                                       onPressed: () async {
                                         // Roomを作成したことがなければ、Roomを作成
-                                        await model.makeRoom(
+                                        bool result = await model.makeRoom(
                                             myUserId, otherUserId);
-                                        // チャットページに遷移
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const ChatPage(),
-                                          ),
-                                        );
+
+                                        if (result) {
+                                          // チャットページに遷移
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const ChatPage(),
+                                            ),
+                                          );
+                                        } else {
+                                          // エラーダイアログを出力
+                                          await dialog.okDialog(context, 'エラー',
+                                              '問題が発生しました。一度サインアウトしてやり直してください。');
+                                        }
                                       },
                                       child: Icon(
                                         Icons.chat,
