@@ -27,6 +27,9 @@ class OtherModel extends ChangeNotifier {
   // ユーザーをフォロー中であるか
   bool isFollow = false;
 
+  // Roomのドキュメント
+  DocumentSnapshot<Map<String, dynamic>>? room;
+
   // ローディングを開始
   void startLoading() {
     isLoading = true;
@@ -243,25 +246,26 @@ class OtherModel extends ChangeNotifier {
   Future<bool> makeRoom(String myUserId, String otherUserId) async {
     // 処理結果
     bool result = true;
-    // roomが存在するか
-    bool isThereRoom = false;
+    // // roomが存在するか
+    // bool isThereRoom = false;
 
     try {
       // Roomがあるのか確認
       final snapshot =
           await roomsRef.where('userIds', arrayContains: myUserId).get();
 
-      for (var room in snapshot.docs) {
-        print(room.get('userIds'));
+      for (DocumentSnapshot<Map<String, dynamic>> localRoom in snapshot.docs) {
         // ユーザーIDsを取得
-        final localUserIds = room.get('userIds');
+        final localUserIds = localRoom.get('userIds');
         // ユーザーIDが存在する場合
         if (localUserIds.contains(otherUserId)) {
-          isThereRoom = true;
+          // Roomを追加
+          room = localRoom;
         }
       }
 
-      if (!isThereRoom) {
+      // ルームが存在しない場合
+      if (room == null) {
         // Roomを作成する前に配列を準備
         final List<String> userIds = [myUserId, otherUserId];
         // Roomを作成

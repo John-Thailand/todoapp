@@ -129,8 +129,10 @@ class OtherPage extends StatelessWidget {
                                           await Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const ChatPage(),
+                                              builder: (context) => ChatPage(
+                                                otherUserName: model.userName,
+                                                room: model.room,
+                                              ),
                                             ),
                                           );
                                         } else {

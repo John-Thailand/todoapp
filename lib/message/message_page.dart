@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/chat/chat_page.dart';
 
 class MessagePage extends StatefulWidget {
-  const MessagePage({ Key? key, }) : super(key: key);
+  const MessagePage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _MessagePageState createState() => _MessagePageState();
@@ -21,7 +23,7 @@ class _MessagePageState extends State<MessagePage> {
         ),
         actions: [
           IconButton(
-            onPressed: () {}, 
+            onPressed: () {},
             icon: const Icon(Icons.search),
             color: Colors.black87,
           ),
@@ -32,8 +34,9 @@ class _MessagePageState extends State<MessagePage> {
           children: <Widget>[
             ListTile(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-                  return const ChatPage();
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (BuildContext context) {
+                  return ChatPage();
                 }));
               },
               contentPadding: const EdgeInsets.symmetric(
