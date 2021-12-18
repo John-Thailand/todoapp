@@ -2,10 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/components/custom_bar.dart';
-import 'package:todo_app/models/task.dart';
-import 'package:todo_app/task_operation/task_operation_model.dart';
-
-import '../style.dart';
+import 'package:todo_app/data/task.dart';
+import 'package:todo_app/pages/task_operation/task_operation_model.dart';
+import 'package:todo_app/style.dart';
 
 class TaskOperationPage extends StatelessWidget {
   TaskOperationPage({Key? key, required this.userId, this.task})
@@ -35,11 +34,11 @@ class TaskOperationPage extends StatelessWidget {
       // 既存のタスク名を代入
       nameController.text = task!.taskName!;
       // todosコレクションのtaskDetail、genreフィールドを追加したため、null判定を行う必要あり
-      if(task!.taskDetail != null) {
+      if (task!.taskDetail != null) {
         // 既存のタスク詳細を代入
         detailController.text = task!.taskDetail!;
       }
-      if(task!.genre != null) {
+      if (task!.genre != null) {
         // ジャンルを代入
         dropdownValue = task!.genre!;
       }
@@ -56,8 +55,8 @@ class TaskOperationPage extends StatelessWidget {
                   // バッチインスタンスの生成
                   WriteBatch batch = db.batch();
                   // ドキュメントの取得
-                  DocumentReference<Map<String, dynamic>>
-                   todoRef = db.collection('todos').doc(task!.documentId);
+                  DocumentReference<Map<String, dynamic>> todoRef =
+                      db.collection('todos').doc(task!.documentId);
                   // todoを削除
                   batch.delete(todoRef);
                   // タスクの削除
@@ -73,14 +72,14 @@ class TaskOperationPage extends StatelessWidget {
                       .get();
                   // ドキュメントを取得
                   final docs = querySnapshot.docs;
-    
+
                   if (docs.isEmpty) {
                     // 処理なし
                   } else {
                     for (DocumentSnapshot doc in docs) {
                       // ドキュメントの取得
-                      DocumentReference<Map<String, dynamic>>
-                        favRef = db.collection('favorites').doc(doc.id);
+                      DocumentReference<Map<String, dynamic>> favRef =
+                          db.collection('favorites').doc(doc.id);
                       // お気に入り情報を削除
                       batch.delete(favRef);
                       // タスクの削除
@@ -126,43 +125,42 @@ class TaskOperationPage extends StatelessWidget {
                     keyboardType: TextInputType.multiline,
                     maxLines: 5,
                     decoration: InputDecoration(
-                      labelText: 'タスクの詳細',
-                      filled: true,
-                      fillColor: customColor.greyColor,
-                      border: OutlineInputBorder(
+                        labelText: 'タスクの詳細',
+                        filled: true,
+                        fillColor: customColor.greyColor,
+                        border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
-                      )
-                    ),
+                        )),
                   ),
                   const SizedBox(height: 32),
-                  Consumer<TaskOperationModel>(builder: (context, model, child) {
-                      return DropdownButton<String>(
-                        value: dropdownValue,
-                        icon: const Icon(Icons.arrow_downward),
-                        iconSize: 24,
-                        elevation: 16,
-                        style: const TextStyle(color: Colors.deepPurple),
-                        underline: Container(
-                          height: 2,
-                          color: Colors.deepPurpleAccent,
-                        ),
-                        onChanged: (String? newValue) {
-                          // 新しい値を代入
-                          dropdownValue = newValue!;
-                          // notifyListeners()を呼び出す
-                          model.listeners();
-                        },
-                        items: <String>['未設定', '仕事', '家事']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      );
-                    }
-                  ),
+                  Consumer<TaskOperationModel>(
+                      builder: (context, model, child) {
+                    return DropdownButton<String>(
+                      value: dropdownValue,
+                      icon: const Icon(Icons.arrow_downward),
+                      iconSize: 24,
+                      elevation: 16,
+                      style: const TextStyle(color: Colors.deepPurple),
+                      underline: Container(
+                        height: 2,
+                        color: Colors.deepPurpleAccent,
+                      ),
+                      onChanged: (String? newValue) {
+                        // 新しい値を代入
+                        dropdownValue = newValue!;
+                        // notifyListeners()を呼び出す
+                        model.listeners();
+                      },
+                      items: <String>['未設定', '仕事', '家事']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    );
+                  }),
                   const SizedBox(height: 240),
                   ElevatedButton(
                     onPressed: () async {
@@ -187,8 +185,8 @@ class TaskOperationPage extends StatelessWidget {
                               'updatedTime': Timestamp.now(),
                             })
                             .then((value) => print("User Updated"))
-                            .catchError(
-                                (error) => print("Failed to update user: $error"));
+                            .catchError((error) =>
+                                print("Failed to update user: $error"));
                       }
                       // タスク一覧へ戻る
                       Navigator.of(context).pop();

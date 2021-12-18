@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:todo_app/models/account.dart';
+import 'package:todo_app/data/account.dart';
 
 class FollowFollowerListModel extends ChangeNotifier {
   // ユーザーのリスト

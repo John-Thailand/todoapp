@@ -2,15 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/components/custom_bar.dart';
-import 'package:todo_app/models/task.dart';
+import 'package:todo_app/data/task.dart';
 import 'package:todo_app/models/task_list.dart';
-import 'package:todo_app/other/other_page.dart';
+import 'package:todo_app/pages/other/other_page.dart';
 import 'package:todo_app/style.dart';
-import 'package:todo_app/task_operation/task_operation_page.dart';
+import 'package:todo_app/pages/task_operation/task_operation_page.dart';
 
 class TaskListPage extends StatelessWidget {
-  TaskListPage({ Key? key }) : super(key: key);
-  
+  TaskListPage({Key? key}) : super(key: key);
+
   // 固定値となる変数は、build外で設定する
   final CustomColor customColor = CustomColor();
   // ユーザーIDの取得
@@ -26,46 +26,47 @@ class TaskListPage extends StatelessWidget {
   // 「全て」タブのページ
   Widget? allPage;
 
-
   // リストを作成する関数
-  ListTile makeListTile(Task task, TaskList model, BuildContext context, bool isAllTaskPage) {
+  ListTile makeListTile(
+      Task task, TaskList model, BuildContext context, bool isAllTaskPage) {
     return ListTile(
       title: isAllTaskPage
-      // ユーザー名を記載
-      ? task.user!.userName != ''
-        ? Text(task.user!.userName)
-        : const Text('未設定')
-      // タスク名を記載
-      : task.taskName != ''
-        ? Text(task.taskName!)
-        : const Text('未設定'),
+          // ユーザー名を記載
+          ? task.user!.userName != ''
+              ? Text(task.user!.userName)
+              : const Text('未設定')
+          // タスク名を記載
+          : task.taskName != ''
+              ? Text(task.taskName!)
+              : const Text('未設定'),
       subtitle: isAllTaskPage
-      // タスク名を記載
-      ? task.taskName != ''
-        ? Text(task.taskName!)
-        : const Text('未設定')
-      // ジャンルを設定
-      : Text(task.genre!),
+          // タスク名を記載
+          ? task.taskName != ''
+              ? Text(task.taskName!)
+              : const Text('未設定')
+          // ジャンルを設定
+          : Text(task.genre!),
       leading: InkWell(
         // 全てページかつ他のユーザーの場合
         onTap: isAllTaskPage && userId != task.userId
-        ? () async {
-            // Othersページに遷移
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OtherPage(myUserId: userId, otherUserId: task.userId),
-              ),
-            );
-          }
-        : null,
+            ? () async {
+                // Othersページに遷移
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        OtherPage(myUserId: userId, otherUserId: task.userId),
+                  ),
+                );
+              }
+            : null,
         child: CircleAvatar(
-            backgroundImage: task.user?.userImageURL == ''
+          backgroundImage: task.user?.userImageURL == ''
               ? const AssetImage('assets/images/account.png')
               : NetworkImage(task.user!.userImageURL) as ImageProvider,
-            backgroundColor: customColor.bodyColor,
-            radius: 52,
-          ),
+          backgroundColor: customColor.bodyColor,
+          radius: 52,
+        ),
       ),
       trailing: SizedBox(
         width: 80,
@@ -73,22 +74,18 @@ class TaskListPage extends StatelessWidget {
           children: [
             IconButton(
               icon: Icon(
-                task.isFavorite
-                    ? Icons.favorite
-                    : Icons.favorite_border,
+                task.isFavorite ? Icons.favorite : Icons.favorite_border,
                 color: task.isFavorite ? Colors.red : null,
               ),
               onPressed: () async {
                 if (task.isFavorite) {
                   // Firebaseのfavoriteコレクションからお気に入りのデータを削除
-                  await model.deleteFavoriteInfo(
-                      task.documentId, userId);
+                  await model.deleteFavoriteInfo(task.documentId, userId);
                   // お気に入り数のカウントダウン
                   model.minusFav(task);
                 } else {
                   // Firebaseのfavoriteコレクションからお気に入りのデータを追加
-                  await model.addFavoriteInfo(
-                      task.documentId, userId);
+                  await model.addFavoriteInfo(task.documentId, userId);
                   // お気に入り数のカウントアップ
                   model.plusFav(task);
                 }
@@ -128,17 +125,16 @@ class TaskListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<TaskList>(
-      create: (_) =>
-          TaskList()
-          ..fetchTaskList(userId: userId, isAllTask: false)
-          ..fetchTaskList(userId: userId, isAllTask: true),
+      create: (_) => TaskList()
+        ..fetchTaskList(userId: userId, isAllTask: false)
+        ..fetchTaskList(userId: userId, isAllTask: true),
       child: Consumer<TaskList>(builder: (context, model, child) {
         // 自身のタスクが存在する場合
         if (model.myTaskList != null) {
           // 自身のタスクの情報を記載したリストタイルのリストを代入
-          myListTiles = model.myTaskList!.map(
-            (task) => makeListTile(task, model, context, false)
-            ).toList();
+          myListTiles = model.myTaskList!
+              .map((task) => makeListTile(task, model, context, false))
+              .toList();
           // 自身のタスクを表示したページ
           myPage = Container(
             color: customColor.bodyColor,
@@ -152,9 +148,9 @@ class TaskListPage extends StatelessWidget {
         // 全てのタスクが存在する場合
         if (model.allTaskList != null) {
           // 全てのタスクの情報を記載したリストタイルのリストを代入
-          allListTiles = model.allTaskList!.map(
-            (task) => makeListTile(task, model, context, true)
-            ).toList();
+          allListTiles = model.allTaskList!
+              .map((task) => makeListTile(task, model, context, true))
+              .toList();
           // 全てのタスクを表示したページ
           allPage = Container(
             color: customColor.bodyColor,

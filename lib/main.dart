@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:todo_app/login/login_page.dart';
+import 'package:provider/provider.dart';
+import 'package:todo_app/pages/login/login_page.dart';
 import 'package:todo_app/home_screen.dart';
+import 'package:todo_app/view_models/task_list_view_model/task_list_view_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,11 +16,18 @@ void main() async {
   final bool isUserNull = currentUser == null;
 
   runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: isUserNull ? const LoginPage() : const HomeScreen(),
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => TaskListViewModel(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: isUserNull ? const LoginPage() : const HomeScreen(),
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
       ),
     ),
   );

@@ -2,13 +2,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/components/custom_bar.dart';
-import 'package:todo_app/follow_follower_list/follow_follower_list_model.dart';
-import 'package:todo_app/models/task.dart';
-import 'package:todo_app/models/task_list.dart';
-import 'package:todo_app/other/other_page.dart';
+import 'package:todo_app/pages/follow_follower_list/follow_follower_list_model.dart';
+import 'package:todo_app/pages/other/other_page.dart';
 import 'package:todo_app/style.dart';
-import 'package:todo_app/task_operation/task_operation_page.dart';
-import 'package:todo_app/models/account.dart';
+import 'package:todo_app/data/account.dart';
 
 class FollowFollowerListPage extends StatelessWidget {
   FollowFollowerListPage(

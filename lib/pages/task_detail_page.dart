@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:todo_app/components/custom_bar.dart';
-import 'package:todo_app/models/task.dart';
+import 'package:todo_app/data/task.dart';
 
 import '../style.dart';
 

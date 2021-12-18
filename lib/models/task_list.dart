@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:todo_app/models/task.dart';
-import 'package:todo_app/models/account.dart';
+import 'package:todo_app/data/task.dart';
+import 'package:todo_app/data/account.dart';
 
 class TaskList extends ChangeNotifier {
   // 自身のタスクリスト

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/components/dialog.dart';
-import 'package:todo_app/reset_mail/reset_mail_model.dart';
+import 'package:todo_app/pages/reset_mail/reset_mail_model.dart';
 import 'package:todo_app/style.dart';
 
 class ResetMailPage extends StatelessWidget {
@@ -58,13 +58,15 @@ class ResetMailPage extends StatelessWidget {
                                 // メールアドレス更新の処理
                                 try {
                                   // ユーザーにメールアドレスを更新して良いか確認を取る
-                                  model.wantToResetEmail = await dialog(context, '確認', 'パスワードを変更しますか？');
+                                  model.wantToResetEmail = await dialog(
+                                      context, '確認', 'パスワードを変更しますか？');
                                   // リセットしたい場合
                                   if (model.wantToResetEmail) {
                                     // ローディング開始
                                     model.startLoading();
                                     // メールアドレス更新処理
-                                    final result = await model.resetEmail(context);
+                                    final result =
+                                        await model.resetEmail(context);
                                     // 成功した場合
                                     if (result) {
                                       // Firestoreに新しいメールアドレスを設定する
@@ -92,17 +94,17 @@ class ResetMailPage extends StatelessWidget {
                   ),
                 ),
                 model.isLoading
-                  ? Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
-                      color: customColor.greyColor,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: primaryColor,
+                    ? Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        color: customColor.greyColor,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: primaryColor,
+                          ),
                         ),
-                      ),
-                    )
-                  :  Container()
+                      )
+                    : Container()
               ],
             );
           }),

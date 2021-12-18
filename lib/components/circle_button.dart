@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/edit_profile/edit_profile_page.dart';
+import 'package:todo_app/pages/edit_profile/edit_profile_page.dart';
 import 'package:todo_app/style.dart';
 
 class circleButton extends StatelessWidget {

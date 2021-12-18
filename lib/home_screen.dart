@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/message/message_page.dart';
-import 'package:todo_app/mypage/my_page.dart';
-import 'package:todo_app/pages/task_list_page.dart';
+import 'package:todo_app/pages/message/message_page.dart';
+import 'package:todo_app/pages/mypage/my_page.dart';
+import 'package:todo_app/pages/task_list/task_list_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

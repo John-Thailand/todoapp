@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/chat/chat_page.dart';
+import 'package:todo_app/pages/chat/chat_page.dart';
 import 'package:todo_app/components/dialog.dart' as dialog;
-import 'package:todo_app/follow_follower_list/fololow_follower_list_page.dart';
+import 'package:todo_app/pages/follow_follower_list/fololow_follower_list_page.dart';
 import 'package:todo_app/style.dart';
 
 import 'other_model.dart';

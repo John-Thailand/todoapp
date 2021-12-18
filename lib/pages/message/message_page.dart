@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:todo_app/chat/chat_page.dart';
+import 'package:todo_app/pages/chat/chat_page.dart';
 
 class MessagePage extends StatefulWidget {
   const MessagePage({

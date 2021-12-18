@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app/login/login_model.dart';
-import 'package:todo_app/register/register_page.dart';
+import 'package:todo_app/pages/login/login_model.dart';
+import 'package:todo_app/pages/register/register_page.dart';
 import 'package:todo_app/home_screen.dart';
 
 class LoginPage extends StatelessWidget {
